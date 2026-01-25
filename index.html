@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reserva Laboratorio de Física</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🔬 Laboratorio de Física</h1>
+        <h2>Sistema de Reservas</h2>
+        
+        <form id="reservaForm">
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" required>
+            
+            <label for="fecha">Fecha:</label>
+            <input type="date" id="fecha" required>
+            
+            <label for="hora">Hora:</label>
+            <input type="time" id="hora" required>
+            
+            <label for="experimento">Tipo de experimento:</label>
+            <select id="experimento" required>
+                <option value="">Seleccione...</option>
+                <option value="mecanica">Mecánica</option>
+                <option value="electromagnetismo">Electromagnetismo</option>
+                <option value="optica">Óptica</option>
+                <option value="termodinamica">Termodinámica</option>
+            </select>
+            
+            <button type="submit">Reservar</button>
+        </form>
+        
+        <div id="reservas">
+            <h3>Reservas Actuales</h3>
+            <ul id="listaReservas"></ul>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
