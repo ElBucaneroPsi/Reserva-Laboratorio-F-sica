@@ -1594,7 +1594,7 @@
     <div class="modal-overlay" id="successModal">
         <div class="modal">
             <div class="modal-icon">
-                <svg xmlns="http://www.w3.org/2000/svg " viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                <svg xmlns="http://www.w3.org/2000/svg  " viewBox="0 0 24 24" fill="none" stroke="currentColor"
                     stroke-width="2">
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                     <polyline points="22 4 12 14.01 9 11.01"></polyline>
@@ -2117,7 +2117,7 @@
             return isValid;
         }
 
-        // FUNCIÓN MODIFICADA: Enviar reservación usando formulario
+        // FUNCIÓN MODIFICADA: Enviar reservación usando fetch con FormData correcto
         function submitReservation() {
             if (!validateForm()) {
                 showToast('COMPLETA TODOS LOS CAMPOS OBLIGATORIOS', 'error');
@@ -2131,16 +2131,7 @@
             var selectedGrupo = grupoSelect.options[grupoSelect.selectedIndex];
             var grupoData = selectedGrupo.text.split(' | ');
 
-            // Crear formulario para envío
-            var form = document.createElement('form');
-            form.method = 'POST';
-            form.action = GOOGLE_SCRIPT_URL;
-
-            // Crear campo con los datos
-            var input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'data';
-            input.value = JSON.stringify({
+            var reservationData = {
                 action: 'reservation',
                 date: selectedDate,
                 time: selectedTime,
@@ -2154,23 +2145,29 @@
                 representativeName: document.getElementById('representativeName').value.trim(),
                 email: document.getElementById('email').value.trim(),
                 notes: document.getElementById('notes').value.trim()
-            });
+            };
 
-            form.appendChild(input);
-            document.body.appendChild(form);
-            form.submit();
-            document.body.removeChild(form);
+            var formData = new FormData();
+            formData.append('data', JSON.stringify(reservationData));
 
-            // Mostrar éxito (no podemos leer respuesta por no-cors)
-            setTimeout(function () {
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                body: formData
+            })
+            .then(function(response) {
                 submitBooking.disabled = false;
                 submitBooking.innerHTML = 'CONFIRMAR RESERVA';
                 var localCode = 'RES' + Math.random().toString(36).substr(2, 6).toUpperCase();
                 showSuccess('RESERVA CONFIRMADA', 'Tu reserva ha sido guardada exitosamente.', localCode);
-            }, 1500);
+            })
+            .catch(function(error) {
+                submitBooking.disabled = false;
+                submitBooking.innerHTML = 'CONFIRMAR RESERVA';
+                showToast('ERROR AL GUARDAR: ' + error, 'error');
+            });
         }
 
-        // FUNCIÓN MODIFICADA: Enviar alta usando formulario
+        // FUNCIÓN MODIFICADA: Enviar alta usando fetch con FormData correcto
         function submitAlta() {
             var isValid = true;
             var name = document.getElementById('altaName').value.trim();
@@ -2208,34 +2205,33 @@
             var profSchedule = profParts[1] || '';
             var profAula = profParts[2] || '';
 
-            // Crear formulario para envío
-            var form = document.createElement('form');
-            form.method = 'POST';
-            form.action = GOOGLE_SCRIPT_URL;
-
-            var input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'data';
-            input.value = JSON.stringify({
+            var altaData = {
                 action: 'register',
                 nombre: name,
                 profesor: profName,
                 horario: profSchedule,
                 aula: profAula
-            });
+            };
 
-            form.appendChild(input);
-            document.body.appendChild(form);
-            form.submit();
-            document.body.removeChild(form);
+            var formData = new FormData();
+            formData.append('data', JSON.stringify(altaData));
 
-            setTimeout(function () {
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                body: formData
+            })
+            .then(function(response) {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = 'REGISTRAR ALTA';
                 document.getElementById('altaForm').reset();
                 document.getElementById('altaInfo').value = '';
                 showSuccess('REGISTRO EXITOSO', 'Tu alta ha sido guardada.', 'ALT' + Math.random().toString(36).substr(2, 6).toUpperCase());
-            }, 1500);
+            })
+            .catch(function(error) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'REGISTRAR ALTA';
+                showToast('ERROR AL GUARDAR: ' + error, 'error');
+            });
         }
 
         function showSuccess(title, message, code) {
@@ -2392,7 +2388,7 @@
 
             width: 20px;
             height: 17px;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg ' width='20' height='17' viewBox='0 0 20 17' fill='none'%3E%3Cpath d='M20 12.3718L16.283 16.2413H12.2518V13.1614H9.17175V16.2413H7.00999V13.1613H3.92998V16.2413H0V4.00101L3.84145 0H20V12.3718Z' fill='white'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg  ' width='20' height='17' viewBox='0 0 20 17' fill='none'%3E%3Cpath d='M20 12.3718L16.283 16.2413H12.2518V13.1614H9.17175V16.2413H7.00999V13.1613H3.92998V16.2413H0V4.00101L3.84145 0H20V12.3718Z' fill='white'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: center;
         }
