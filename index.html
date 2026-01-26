@@ -1962,7 +1962,7 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
             }, 3000);
         }
 
-        function submitAlta() {
+       function submitAlta() {
     var isValid = true;
     var name = document.getElementById('altaName').value.trim();
     var professor = document.getElementById('altaProfessor').value;
@@ -2002,7 +2002,6 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
     var profSchedule = profParts[1] || '';
     var profAula = profParts[2] || '';
     
-    // Log para ver qué se está enviando
     console.log('Datos a enviar:', {
         nombre: name,
         profesor: profName,
@@ -2018,7 +2017,6 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
         aula: profAula
     };
 
-    // USA LA VARIABLE GLOBAL (ya definida al inicio)
     fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
         mode: 'no-cors',
@@ -2041,15 +2039,6 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
         showToast('ERROR AL REGISTRAR. INTENTA DE NUEVO.', 'error');
     });
 }
-            setTimeout(function() {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = 'REGISTRAR ALTA';
-                document.getElementById('altaForm').reset();
-                document.getElementById('altaInfo').value = '';
-                showSuccess('REGISTRO EXITOSO', 'Tu alta ha sido guardada en la hoja de Altas.', 'ALT' + Math.random().toString(36).substr(2, 6).toUpperCase());
-            }, 3000);
-        }
-
         function showSuccess(title, message, code) {
             document.getElementById('modalTitle').textContent = title;
             document.getElementById('modalMessage').textContent = message;
