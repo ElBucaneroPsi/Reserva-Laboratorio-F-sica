@@ -11,12 +11,22 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --matrix-green: #00FF41;
+            --matrix-dark: #003B00;
+            --matrix-black: #0D0D0D;
+            --matrix-bg: #000000;
+            --matrix-dim: #008F11;
+            --matrix-glow: 0 0 10px #00FF41, 0 0 20px #00FF41;
+            --matrix-error: #FF3333;
+        }
+
         body {
             font-family: 'Courier New', monospace;
-            background-color: #000000;
-            color: #00FF41;
+            background-color: var(--matrix-bg);
+            color: var(--matrix-green);
             min-height: 100vh;
-            padding: 20px;
+            overflow-x: hidden;
         }
 
         #matrix-canvas {
@@ -26,73 +36,95 @@
             width: 100%;
             height: 100%;
             z-index: -1;
+            pointer-events: none;
         }
 
-        .container {
-            max-width: 900px;
+        .app-container {
+            max-width: 1000px;
             margin: 0 auto;
-            background: rgba(13, 13, 13, 0.95);
-            padding: 40px;
-            border-radius: 15px;
-            border: 2px solid #00FF41;
-            box-shadow: 0 0 20px #00FF41;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
         }
 
-        h1 {
+        /* Header */
+        .header {
+            background-color: rgba(13, 13, 13, 0.95);
+            border: 2px solid var(--matrix-green);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: var(--matrix-glow);
             text-align: center;
-            color: #00FF41;
-            text-shadow: 0 0 10px #00FF41;
-            margin-bottom: 10px;
-            font-size: 2rem;
-            letter-spacing: 3px;
         }
 
-        h2 {
-            text-align: center;
-            color: #008F11;
-            margin-bottom: 30px;
-            font-size: 1.1rem;
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--matrix-green);
+            text-shadow: var(--matrix-glow);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
-        .datetime {
-            text-align: center;
-            color: #008F11;
-            margin-bottom: 30px;
-            padding: 10px;
-            border: 1px solid #008F11;
+        .header .subtitle {
+            font-size: 0.9rem;
+            color: var(--matrix-dim);
+            margin-bottom: 5px;
+        }
+
+        .header .professor {
+            font-size: 1rem;
+            color: var(--matrix-green);
+            font-weight: 500;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--matrix-dim);
+        }
+
+        .header-datetime {
+            font-size: 0.85rem;
+            color: var(--matrix-dim);
+            margin-top: 10px;
+            padding: 8px 15px;
+            border: 1px solid var(--matrix-dim);
             border-radius: 4px;
+            display: inline-block;
+            background: rgba(0, 59, 0, 0.3);
         }
 
-        .step-indicator {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
+        /* Navigation */
+        .nav-back {
+            margin-bottom: 20px;
         }
 
-        .step {
+        .btn-back {
+            background: transparent;
+            border: 1px solid var(--matrix-green);
+            color: var(--matrix-green);
             padding: 10px 20px;
-            border: 2px solid #008F11;
-            border-radius: 6px;
-            color: #008F11;
-            font-weight: bold;
+            font-family: inherit;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s;
         }
 
-        .step.active {
-            background: #00FF41;
-            color: #000000;
-            border-color: #00FF41;
-            box-shadow: 0 0 15px #00FF41;
+        .btn-back:hover {
+            background: var(--matrix-green);
+            color: var(--matrix-bg);
+            box-shadow: 0 0 15px var(--matrix-green);
         }
 
+        /* Sections */
         .section {
             display: none;
         }
 
         .section.active {
             display: block;
-            animation: fadeIn 0.5s;
+            animation: fadeIn 0.5s ease;
         }
 
         @keyframes fadeIn {
@@ -100,34 +132,132 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        label {
-            color: #00FF41;
-            font-weight: bold;
-            margin-bottom: 8px;
-            display: block;
-            letter-spacing: 1px;
+        /* Landing Menu */
+        .landing-menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 40px;
         }
 
-        select, input {
-            width: 100%;
-            padding: 14px;
-            background: #0D0D0D;
-            border: 2px solid #00FF41;
-            border-radius: 6px;
-            color: #00FF41;
-            font-family: 'Courier New', monospace;
-            font-size: 1rem;
+        .menu-card {
+            background: rgba(13, 13, 13, 0.9);
+            border: 2px solid var(--matrix-green);
+            border-radius: 8px;
+            padding: 40px 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 10px var(--matrix-dim);
+        }
+
+        .menu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 25px var(--matrix-green);
+            background: rgba(0, 255, 65, 0.05);
+        }
+
+        .menu-card .icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            text-shadow: var(--matrix-glow);
+        }
+
+        .menu-card h2 {
+            font-size: 1.4rem;
+            color: var(--matrix-green);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .menu-card p {
+            color: var(--matrix-dim);
+            font-size: 0.9rem;
+        }
+
+        /* Card Container */
+        .card {
+            background-color: rgba(13, 13, 13, 0.95);
+            border: 2px solid var(--matrix-green);
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 0 10px var(--matrix-dim);
+        }
+
+        h2 {
+            color: var(--matrix-green);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-align: center;
+        }
+
+        /* Step Indicator */
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border: 1px solid var(--matrix-dim);
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--matrix-dim);
+        }
+
+        .step.active {
+            background-color: var(--matrix-green);
+            color: var(--matrix-bg);
+            border-color: var(--matrix-green);
+            box-shadow: 0 0 10px var(--matrix-green);
+        }
+
+        /* Form Elements */
+        .form-group {
             margin-bottom: 20px;
         }
 
-        select:focus, input:focus {
-            outline: none;
-            box-shadow: 0 0 15px #00FF41;
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--matrix-green);
         }
 
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--matrix-green);
+            border-radius: 4px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            background-color: var(--matrix-bg);
+            color: var(--matrix-green);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--matrix-green);
+            box-shadow: 0 0 10px var(--matrix-green);
+        }
+
+        /* Calendar */
         .calendar {
-            background: #0D0D0D;
-            border: 2px solid #00FF41;
+            background-color: var(--matrix-bg);
+            border: 1px solid var(--matrix-dim);
             border-radius: 8px;
             padding: 20px;
             margin-bottom: 20px;
@@ -137,42 +267,51 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
-        .calendar-header button {
-            background: transparent;
-            border: 2px solid #00FF41;
-            color: #00FF41;
-            padding: 8px 16px;
-            border-radius: 4px;
+        .calendar-header span {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--matrix-green);
+        }
+
+        .calendar-nav {
+            background: none;
+            border: 1px solid var(--matrix-green);
+            color: var(--matrix-green);
             cursor: pointer;
-            font-weight: bold;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 1.2rem;
+            font-family: inherit;
         }
 
-        .calendar-header button:hover {
-            background: #00FF41;
-            color: #000000;
+        .calendar-nav:hover {
+            background-color: var(--matrix-green);
+            color: var(--matrix-bg);
+            box-shadow: 0 0 10px var(--matrix-green);
         }
 
         .calendar-weekdays {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
-            margin-bottom: 10px;
+            gap: 4px;
+            margin-bottom: 8px;
             text-align: center;
         }
 
-        .calendar-weekdays div {
-            color: #008F11;
-            font-weight: bold;
-            padding: 10px 0;
+        .calendar-weekdays span {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--matrix-dim);
+            padding: 8px 0;
         }
 
         .calendar-days {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
+            gap: 4px;
         }
 
         .calendar-day {
@@ -180,149 +319,278 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 1px solid #003B00;
             border-radius: 4px;
+            font-size: 0.9rem;
             cursor: pointer;
-            transition: all 0.3s;
+            border: 1px solid transparent;
+            color: var(--matrix-green);
         }
 
-        .calendar-day:hover:not(.disabled) {
-            background: #00FF41;
-            color: #000000;
-            box-shadow: 0 0 10px #00FF41;
+        .calendar-day:not(.disabled):hover {
+            background-color: var(--matrix-green);
+            color: var(--matrix-bg);
+            box-shadow: 0 0 10px var(--matrix-green);
         }
 
         .calendar-day.selected {
-            background: #00FF41;
-            color: #000000;
-            font-weight: bold;
-            box-shadow: 0 0 15px #00FF41;
+            background-color: var(--matrix-green);
+            color: var(--matrix-bg);
+            box-shadow: 0 0 15px var(--matrix-green);
         }
 
         .calendar-day.disabled {
-            color: #003B00;
+            color: var(--matrix-dark);
             cursor: not-allowed;
         }
 
+        /* Time Slots */
         .time-slots {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 12px;
+            margin-bottom: 24px;
         }
 
         .time-slot {
-            padding: 12px;
-            background: #0D0D0D;
-            border: 2px solid #00FF41;
-            border-radius: 6px;
+            padding: 14px 12px;
+            border: 1px solid var(--matrix-green);
+            border-radius: 4px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.3s;
+            font-weight: 500;
+            font-size: 0.9rem;
+            background-color: var(--matrix-bg);
+            color: var(--matrix-green);
+            font-family: inherit;
         }
 
         .time-slot:hover {
-            background: #00FF41;
-            color: #000000;
-            box-shadow: 0 0 15px #00FF41;
+            background-color: var(--matrix-green);
+            color: var(--matrix-bg);
+            box-shadow: 0 0 15px var(--matrix-green);
         }
 
         .time-slot.selected {
-            background: #00FF41;
-            color: #000000;
-            font-weight: bold;
+            background-color: var(--matrix-green);
+            color: var(--matrix-bg);
+            box-shadow: 0 0 15px var(--matrix-green);
         }
 
-        button {
-            background: #00FF41;
-            color: #000000;
-            padding: 16px;
-            border: none;
-            border-radius: 6px;
-            font-size: 1.1rem;
-            font-weight: bold;
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            font-weight: 500;
             cursor: pointer;
-            letter-spacing: 2px;
-            font-family: 'Courier New', monospace;
-            width: 100%;
-            margin-top: 20px;
+            font-family: inherit;
+            transition: all 0.3s;
         }
 
-        button:hover {
-            box-shadow: 0 0 25px #00FF41;
-        }
-
-        button:disabled {
+        .btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
         }
 
+        .btn-primary {
+            background-color: var(--matrix-green);
+            color: var(--matrix-bg);
+            border: 1px solid var(--matrix-green);
+            width: 100%;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            box-shadow: 0 0 20px var(--matrix-green);
+        }
+
         .btn-secondary {
-            background: transparent;
-            border: 2px solid #00FF41;
-            color: #00FF41;
+            background-color: transparent;
+            color: var(--matrix-green);
+            border: 1px solid var(--matrix-green);
         }
 
-        .btn-secondary:hover {
-            background: #00FF41;
-            color: #000000;
+        .btn-secondary:hover:not(:disabled) {
+            background-color: var(--matrix-green);
+            color: var(--matrix-bg);
         }
 
-        .info-selected {
-            background: rgba(0, 255, 65, 0.1);
-            border: 2px solid #00FF41;
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 20px;
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
         }
 
-        #reservas {
-            margin-top: 40px;
-            padding-top: 30px;
-            border-top: 2px solid #00FF41;
-        }
-
-        h3 {
-            color: #00FF41;
-            margin-bottom: 20px;
-            text-shadow: 0 0 10px #00FF41;
-        }
-
-        ul {
-            list-style: none;
-        }
-
-        li {
-            background: rgba(0, 59, 0, 0.5);
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 6px;
-            border: 2px solid #00FF41;
-        }
-
-        li:hover {
-            background: rgba(0, 255, 65, 0.2);
-        }
-
-        .btn-delete {
-            float: right;
-            background: #FF3333;
-            color: white;
-            padding: 6px 12px;
-            border: none;
+        .info-box {
+            background-color: var(--matrix-dark);
+            color: var(--matrix-green);
+            font-weight: 500;
+            margin-bottom: 16px;
+            padding: 12px;
             border-radius: 4px;
+            text-align: center;
+            border: 1px solid var(--matrix-dim);
+        }
+
+        /* Number Input */
+        .number-input {
+            display: flex;
+        }
+
+        .number-input input {
+            text-align: center;
+            border-radius: 0;
+            border-left: 1px solid var(--matrix-green);
+            border-right: 1px solid var(--matrix-green);
+        }
+
+        .number-btn {
+            width: 48px;
+            height: 48px;
+            border: 1px solid var(--matrix-green);
+            background-color: var(--matrix-bg);
+            font-size: 1.25rem;
+            font-weight: 600;
             cursor: pointer;
+            color: var(--matrix-green);
+            font-family: inherit;
+        }
+
+        .number-btn:first-child {
+            border-radius: 4px 0 0 4px;
+        }
+
+        .number-btn:last-child {
+            border-radius: 0 4px 4px 0;
+        }
+
+        .number-btn:hover {
+            background-color: var(--matrix-green);
+            color: var(--matrix-bg);
+        }
+
+        /* Table */
+        .rol-table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--matrix-green);
+            background-color: rgba(13, 13, 13, 0.98);
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+        }
+
+        .rol-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        .rol-table th,
+        .rol-table td {
+            padding: 14px 12px;
+            text-align: left;
+            border: 1px solid var(--matrix-green);
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--matrix-green);
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .rol-table th {
+            background-color: var(--matrix-dark);
+            color: var(--matrix-green);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 2px solid var(--matrix-green);
+        }
+
+        .rol-table tbody tr:nth-child(even) {
+            background-color: rgba(0, 59, 0, 0.5);
+        }
+
+        .rol-table tbody tr:hover {
+            background-color: rgba(0, 255, 65, 0.2);
+        }
+
+        .rol-table .vacation-row {
+            background-color: rgba(255, 51, 51, 0.3) !important;
+        }
+
+        .rol-table .vacation-row td {
+            color: var(--matrix-error);
+            font-weight: 700;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background-color: var(--matrix-black);
+            border: 2px solid var(--matrix-green);
+            border-radius: 8px;
+            padding: 40px;
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+            box-shadow: var(--matrix-glow);
+        }
+
+        .modal h2 {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+            color: var(--matrix-green);
+            text-shadow: 0 0 10px var(--matrix-green);
+        }
+
+        .confirmation-code {
+            background-color: var(--matrix-dark);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 24px 0;
+            border: 1px solid var(--matrix-green);
+        }
+
+        .confirmation-code .label {
             font-size: 0.85rem;
-            width: auto;
-            margin: 0;
+            color: var(--matrix-dim);
+            margin-bottom: 8px;
+        }
+
+        .confirmation-code .code {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--matrix-green);
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px var(--matrix-green);
         }
 
         @media (max-width: 600px) {
-            .container {
-                padding: 20px;
+            .header h1 {
+                font-size: 1.2rem;
             }
-            h1 {
-                font-size: 1.5rem;
+            .menu-card {
+                padding: 30px 20px;
+            }
+            .btn-group {
+                flex-direction: column;
             }
             .time-slots {
                 grid-template-columns: repeat(3, 1fr);
@@ -333,89 +601,433 @@
 <body>
     <canvas id="matrix-canvas"></canvas>
     
-    <div class="container">
-        <h1>🔬 LABORATORIO DE FÍSICA</h1>
-        <h2>SISTEMA DE RESERVAS - UASLP</h2>
-        <div class="datetime" id="currentDateTime"></div>
+    <div class="app-container">
+        <header class="header">
+            <h1>🔬 Laboratorio de Física</h1>
+            <p class="subtitle">Facultad de Ciencias - UASLP</p>
+            <p class="professor">Prof. Juan Guillermo Téllez Villalobos</p>
+            <div id="currentDateTime" class="header-datetime"></div>
+        </header>
 
-        <div class="step-indicator">
-            <div class="step active" id="step1">1. MATERIA Y PROFESOR</div>
-            <div class="step" id="step2">2. FECHA</div>
-            <div class="step" id="step3">3. HORA</div>
-            <div class="step" id="step4">4. CONFIRMAR</div>
-        </div>
-
-        <!-- PASO 1: MATERIA Y PROFESOR -->
-        <div id="section1" class="section active">
-            <label>MATERIA:</label>
-            <select id="materia">
-                <option value="">SELECCIONE...</option>
-                <option value="estatica">ESTÁTICA Y DINÁMICA</option>
-                <option value="ondas">ONDAS Y TERMODINÁMICA</option>
-                <option value="electricidad">ELECTRICIDAD Y MAGNETISMO</option>
-            </select>
-
-            <label>PROFESOR:</label>
-            <select id="profesor" disabled>
-                <option value="">PRIMERO SELECCIONE MATERIA</option>
-            </select>
-
-            <label>NOMBRE COMPLETO:</label>
-            <input type="text" id="nombreAlumno" placeholder="Ingresa tu nombre">
-
-            <button onclick="nextStep(2)" id="btnStep1" disabled>CONTINUAR →</button>
-        </div>
-
-        <!-- PASO 2: CALENDARIO -->
-        <div id="section2" class="section">
-            <div class="info-selected" id="infoStep1"></div>
-            
-            <label>SELECCIONA LA FECHA:</label>
-            <div class="calendar">
-                <div class="calendar-header">
-                    <button onclick="changeMonth(-1)">◄</button>
-                    <span id="currentMonth"></span>
-                    <button onclick="changeMonth(1)">►</button>
+        <!-- MENÚ PRINCIPAL -->
+        <div id="section-landing" class="section active">
+            <div class="landing-menu">
+                <div class="menu-card" onclick="showSection('alta')">
+                    <div class="icon">📝</div>
+                    <h2>Darte de Alta</h2>
+                    <p>Registro una vez al inicio del semestre</p>
                 </div>
-                <div class="calendar-weekdays">
-                    <div>DOM</div>
-                    <div>LUN</div>
-                    <div>MAR</div>
-                    <div>MIÉ</div>
-                    <div>JUE</div>
-                    <div>VIE</div>
-                    <div>SÁB</div>
+
+                <div class="menu-card" onclick="showSection('reservation')">
+                    <div class="icon">📅</div>
+                    <h2>Reservaciones</h2>
+                    <p>Reserva equipos y horarios</p>
                 </div>
-                <div class="calendar-days" id="calendarDays"></div>
+
+                <div class="menu-card" onclick="showSection('practicas')">
+                    <div class="icon">📥</div>
+                    <h2>Prácticas</h2>
+                    <p>Descarga guías de prácticas</p>
+                </div>
+
+                <div class="menu-card" onclick="showSection('rol')">
+                    <div class="icon">📋</div>
+                    <h2>Rol de Prácticas</h2>
+                    <p>Calendario del semestre</p>
+                </div>
+
+                <div class="menu-card" onclick="showSection('bitacora')">
+                    <div class="icon">📄</div>
+                    <h2>Bitácora</h2>
+                    <p>Características del reporte</p>
+                </div>
             </div>
-
-            <button class="btn-secondary" onclick="nextStep(1)">← REGRESAR</button>
-            <button onclick="nextStep(3)" id="btnStep2" disabled>CONTINUAR →</button>
         </div>
 
-        <!-- PASO 3: HORA -->
-        <div id="section3" class="section">
-            <div class="info-selected" id="infoStep2"></div>
-            
-            <label>SELECCIONA LA HORA:</label>
-            <div class="time-slots" id="timeSlots"></div>
+        <!-- ALTA DE ALUMNOS -->
+        <div id="section-alta" class="section">
+            <div class="nav-back">
+                <button class="btn-back" onclick="showSection('landing')">← VOLVER AL MENÚ</button>
+            </div>
+            <div class="card">
+                <h2>Registro de Alumno</h2>
+                <p style="text-align: center; color: var(--matrix-dim); margin-bottom: 20px;">Solo registrarse una vez al inicio del curso</p>
+                
+                <div class="form-group">
+                    <label>Nombre Completo del Alumno *</label>
+                    <input type="text" id="altaNombre" placeholder="APELLIDO PATERNO APELLIDO MATERNO - NOMBRE(S)">
+                </div>
 
-            <button class="btn-secondary" onclick="nextStep(2)">← REGRESAR</button>
-            <button onclick="nextStep(4)" id="btnStep3" disabled>CONTINUAR →</button>
+                <div class="form-group">
+                    <label>Seleccionar Profesor *</label>
+                    <select id="altaProfesor">
+                        <option value="">SELECCIONAR PROFESOR</option>
+                        <optgroup label="ESTÁTICA Y DINÁMICA">
+                            <option>ALONSO ÁLVAREZ MARÍA ALICIA - L17-18, M17-18, Mi17-18, J17-18, V17-18 - E3-406</option>
+                            <option>FLORES SANDOVAL OMAR - L14-16, Mi14-16, V14-15 - E1-204</option>
+                            <option>ORTEGA ZARZOSA GERARDO - L08-10, Mi08-10, V08-09 - E3-203</option>
+                            <option>ACOSTA ESPINOZA MARIBEL MAGDALENA - M14-16, J14-16, V15-16 - E3-203</option>
+                        </optgroup>
+                        <optgroup label="ONDAS Y TERMODINÁMICA">
+                            <option>MÉNDEZ MARTÍNEZ JOSÉ MANUEL - M12-14, J12-14, V13-14 - E1-102</option>
+                            <option>RAMÍREZ ELÍAS MIGUEL ÁNGEL GHEBRE - M12-14, J12-14, V13-14 - E1-101</option>
+                            <option>ALONSO ÁLVAREZ MARÍA ALICIA - M18-20, J18-20, V19-20 - E3-501</option>
+                            <option>GARCÍA GARCÍA SALVADOR - M12-14, J12-14, V13-14 - E3-501</option>
+                            <option>OLVERA SOSA MIGUEL ALEJANDRO - L08-10, Mi08-10, V08-09 - E1-201</option>
+                            <option>REYES LÓPEZ LUIS EDUARDO - L10-12, Mi10-12, V10-11 - E3-204</option>
+                            <option>RAMÍREZ GONZÁLEZ PEDRO EZEQUIEL - L12-14, M11:30-13, J11:30-13 - IF-621</option>
+                            <option>MÉNDEZ MARTÍNEZ JOSÉ MANUEL - L10-12, Mi10-12, V10-11 - E1-303</option>
+                        </optgroup>
+                        <optgroup label="ELECTRICIDAD Y MAGNETISMO">
+                            <option>CASTILLO SORIA FRANCISCO RUBÉN - M10-12, J10-12, V11-12 - E3-402</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div class="info-box" id="altaInfo" style="display: none;"></div>
+
+                <button class="btn-primary" onclick="registrarAlta()">REGISTRAR ALTA</button>
+            </div>
         </div>
 
-        <!-- PASO 4: CONFIRMACIÓN -->
-        <div id="section4" class="section">
-            <h3>CONFIRMA TU RESERVA:</h3>
-            <div class="info-selected" id="infoStep3"></div>
+        <!-- RESERVACIONES -->
+        <div id="section-reservation" class="section">
+            <div class="nav-back">
+                <button class="btn-back" onclick="showSection('landing')">← VOLVER AL MENÚ</button>
+            </div>
+            <div class="card">
+                <div class="step-indicator">
+                    <div class="step active" id="stepInd1">1 FECHA</div>
+                    <div class="step" id="stepInd2">2 HORARIO</div>
+                    <div class="step" id="stepInd3">3 DATOS</div>
+                </div>
 
-            <button class="btn-secondary" onclick="nextStep(3)">← REGRESAR</button>
-            <button onclick="confirmarReserva()">✓ CONFIRMAR RESERVA</button>
+                <!-- PASO 1: FECHA -->
+                <div id="reserveStep1" class="reserve-step">
+                    <h2>Seleccionar Fecha</h2>
+                    <div class="calendar">
+                        <div class="calendar-header">
+                            <button class="calendar-nav" onclick="changeMonth(-1)">‹</button>
+                            <span id="currentMonth"></span>
+                            <button class="calendar-nav" onclick="changeMonth(1)">›</button>
+                        </div>
+                        <div class="calendar-weekdays">
+                            <span>DOM</span><span>LUN</span><span>MAR</span><span>MIÉ</span>
+                            <span>JUE</span><span>VIE</span><span>SÁB</span>
+                        </div>
+                        <div class="calendar-days" id="calendarDays"></div>
+                    </div>
+                    <div class="info-box">Fecha seleccionada: <strong id="selectedDateText">NINGUNA</strong></div>
+                    <button class="btn-primary" id="btnContinue1" onclick="reserveNextStep(2)" disabled>CONTINUAR</button>
+                </div>
+
+                <!-- PASO 2: HORARIO -->
+                <div id="reserveStep2" class="reserve-step" style="display:none;">
+                    <h2>Seleccionar Horario</h2>
+                    <div class="time-slots" id="timeSlots"></div>
+                    <div class="btn-group">
+                        <button class="btn-secondary" onclick="reserveNextStep(1)">ATRÁS</button>
+                        <button class="btn-primary" id="btnContinue2" onclick="reserveNextStep(3)" disabled>CONTINUAR</button>
+                    </div>
+                </div>
+
+                <!-- PASO 3: DATOS -->
+                <div id="reserveStep3" class="reserve-step" style="display:none;">
+                    <h2>Datos del Equipo</h2>
+                    
+                    <div class="form-group">
+                        <label>Nombre del Equipo *</label>
+                        <input type="text" id="equipoNombre">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Materia *</label>
+                        <select id="equipoMateria">
+                            <option value="">SELECCIONAR MATERIA</option>
+                            <option value="estatica">ESTÁTICA Y DINÁMICA</option>
+                            <option value="ondas">ONDAS Y TERMODINÁMICA</option>
+                            <option value="electricidad">ELECTRICIDAD Y MAGNETISMO</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Grupo/Profesor *</label>
+                        <select id="equipoProfesor" disabled>
+                            <option value="">SELECCIONAR GRUPO</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Número de Integrantes (1-6) *</label>
+                        <div class="number-input">
+                            <button class="number-btn" onclick="changeIntegrantes(-1)">-</button>
+                            <input type="number" id="equipoIntegrantes" value="1" min="1" max="6" readonly>
+                            <button class="number-btn" onclick="changeIntegrantes(1)">+</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nombre del Responsable del Equipo *</label>
+                        <input type="text" id="equipoResponsable">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Correo Institucional *</label>
+                        <input type="email" id="equipoCorreo">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Observaciones</label>
+                        <textarea id="equipoObservaciones" rows="3"></textarea>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn-secondary" onclick="reserveNextStep(2)">ATRÁS</button>
+                        <button class="btn-primary" onclick="confirmarReserva()">CONFIRMAR RESERVA</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div id="reservas">
-            <h3>RESERVAS ACTIVAS</h3>
-            <ul id="listaReservas"></ul>
+        <!-- PRÁCTICAS -->
+        <div id="section-practicas" class="section">
+            <div class="nav-back">
+                <button class="btn-back" onclick="showSection('landing')">← VOLVER AL MENÚ</button>
+            </div>
+            <div class="card">
+                <h2>Prácticas Disponibles</h2>
+                <p style="text-align: center; color: var(--matrix-dim); margin-bottom: 30px;">Selecciona una materia para descargar sus prácticas</p>
+                
+                <div class="landing-menu">
+                    <div class="menu-card">
+                        <div class="icon">⚙️</div>
+                        <h2 style="font-size: 1.2rem;">Estática y Dinámica</h2>
+                        <p>Guías de prácticas disponibles</p>
+                    </div>
+                    <div class="menu-card">
+                        <div class="icon">🌊</div>
+                        <h2 style="font-size: 1.2rem;">Ondas y Termodinámica</h2>
+                        <p>Guías de prácticas disponibles</p>
+                    </div>
+                    <div class="menu-card">
+                        <div class="icon">⚡</div>
+                        <h2 style="font-size: 1.2rem;">Electricidad y Magnetismo</h2>
+                        <p>Guías de prácticas disponibles</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROL DE PRÁCTICAS -->
+        <div id="section-rol" class="section">
+            <div class="nav-back">
+                <button class="btn-back" onclick="showSection('landing')">← VOLVER AL MENÚ</button>
+            </div>
+            <div class="card">
+                <h2>Rol de Prácticas del Semestre</h2>
+                <p style="text-align: center; color: var(--matrix-dim); margin-bottom: 20px;">Calendario de actividades del laboratorio de Física</p>
+                
+                <div class="rol-table-container">
+                    <table class="rol-table">
+                        <thead>
+                            <tr>
+                                <th>Semana</th>
+                                <th>Fechas</th>
+                                <th>Actividad / Recordatorio</th>
+                                <th>FIS 1 Estática y Dinámica</th>
+                                <th>FIS 2 Ondas y Termodinámica</th>
+                                <th>FIS 3 Electricidad y Magnetismo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>19 A 23 ENERO</td>
+                                <td>REGISTRO DE ALUMNOS AL SISTEMA</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>26 A 30 ENERO</td>
+                                <td>RESERVAN PRÁCTICA F1 Y F3</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>3 A 6 FEBRERO</td>
+                                <td>REALIZAN F1 Y F3, RESERVAN F2</td>
+                                <td>P1. Mesa de Vectores</td>
+                                <td>—</td>
+                                <td>P1. Electroscopio</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>9 A 13 FEBRERO</td>
+                                <td>REALIZAN F2, RESERVAN F1 Y F3</td>
+                                <td>—</td>
+                                <td>P1. Densidad</td>
+                                <td>—</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>16 A 20 FEBRERO</td>
+                                <td>REALIZAN F1 Y F3, RESERVAN F2</td>
+                                <td>P2. Descomposición de Fuerzas</td>
+                                <td>—</td>
+                                <td>P2. Líneas de Campo</td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td>23 A 27 FEBRERO</td>
+                                <td>REALIZAN F2, RESERVAN F1 Y F3</td>
+                                <td>—</td>
+                                <td>P2. Tubo de Venturi</td>
+                                <td>—</td>
+                            </tr>
+                            <tr>
+                                <td>7</td>
+                                <td>2 A 6 MARZO</td>
+                                <td>REALIZAN F1 Y F3, RESERVAN F2</td>
+                                <td>P3. Tiro Parabólico</td>
+                                <td>—</td>
+                                <td>P3. Circuito Serie Paralelo</td>
+                            </tr>
+                            <tr>
+                                <td>8</td>
+                                <td>9 A 13 MARZO</td>
+                                <td>REALIZAN F2, RESERVAN F1 Y F3</td>
+                                <td>—</td>
+                                <td>P3. Dilatación Térmica</td>
+                                <td>—</td>
+                            </tr>
+                            <tr>
+                                <td>9</td>
+                                <td>17 A 20 MARZO</td>
+                                <td>REALIZAN F1 Y F3, RESERVAN F2</td>
+                                <td>P4. Péndulo Balístico</td>
+                                <td>—</td>
+                                <td>P4. Ley de Ohm</td>
+                            </tr>
+                            <tr>
+                                <td>10</td>
+                                <td>23 A 27 MARZO</td>
+                                <td>REALIZAN F2, RESERVAN F1 Y F3</td>
+                                <td>—</td>
+                                <td>P4. Calor Específico</td>
+                                <td>—</td>
+                            </tr>
+                            <tr class="vacation-row">
+                                <td colspan="6">PERIODO VACACIONAL (30 MARZO - 10 ABRIL)</td>
+                            </tr>
+                            <tr>
+                                <td>11</td>
+                                <td>13 A 17 ABRIL</td>
+                                <td>REALIZAN F1 Y F3, RESERVAN F2</td>
+                                <td>P5. Poleas</td>
+                                <td>—</td>
+                                <td>P5. Inducción Electromagnética</td>
+                            </tr>
+                            <tr>
+                                <td>12</td>
+                                <td>20 A 24 ABRIL</td>
+                                <td>REALIZAN F2, RESERVAN F1 Y F3</td>
+                                <td>—</td>
+                                <td>P5. Óptica</td>
+                                <td>—</td>
+                            </tr>
+                            <tr>
+                                <td>13</td>
+                                <td>27 A 30 ABRIL</td>
+                                <td>REALIZAN F1 Y F3, RESERVAN F2</td>
+                                <td>P6. Plano Inclinado</td>
+                                <td>—</td>
+                                <td>P6. Bobinas / Radiómetro</td>
+                            </tr>
+                            <tr>
+                                <td>14</td>
+                                <td>4 A 8 MAYO</td>
+                                <td>REALIZAN F2</td>
+                                <td>—</td>
+                                <td>P6. Acústica</td>
+                                <td>—</td>
+                            </tr>
+                            <tr>
+                                <td>15</td>
+                                <td>11 A 14 MAYO</td>
+                                <td>ENVÍO DE CALIFICACIONES</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="margin-top: 30px; padding: 20px; background: rgba(13, 13, 13, 0.95); border: 1px solid var(--matrix-green); border-radius: 8px;">
+                    <h3 style="color: var(--matrix-green); margin-bottom: 15px;">Información Importante</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="padding: 6px 0; color: var(--matrix-green);">• <strong>FIS 1:</strong> Estática y Dinámica</li>
+                        <li style="padding: 6px 0; color: var(--matrix-green);">• <strong>FIS 2:</strong> Ondas y Termodinámica</li>
+                        <li style="padding: 6px 0; color: var(--matrix-green);">• <strong>FIS 3:</strong> Electricidad y Magnetismo</li>
+                        <li style="padding: 6px 0; color: var(--matrix-green);">• <strong>Nota:</strong> Prácticas pueden cambiar según disponibilidad</li>
+                        <li style="padding: 6px 0; color: var(--matrix-green);">• <strong>Importante:</strong> Reservas con 1 semana de anticipación</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- BITÁCORA -->
+        <div id="section-bitacora" class="section">
+            <div class="nav-back">
+                <button class="btn-back" onclick="showSection('landing')">← VOLVER AL MENÚ</button>
+            </div>
+            <div class="card">
+                <h2>Partes de la Bitácora</h2>
+                <p style="text-align: center; color: var(--matrix-dim); margin-bottom: 30px;">Guía para elaboración del reporte de prácticas</p>
+                
+                <div style="margin-bottom: 30px; padding: 20px; background: rgba(0, 59, 0, 0.3); border: 2px solid var(--matrix-green); border-radius: 8px;">
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="padding: 10px 0; border-bottom: 1px solid var(--matrix-dim);"><strong>1. PORTADA:</strong> Datos del estudiante, materia, grupo, fecha y nombre de la práctica</li>
+                        <li style="padding: 10px 0; border-bottom: 1px solid var(--matrix-dim);"><strong>2. OBJETIVO:</strong> Descripción clara del propósito de la práctica</li>
+                        <li style="padding: 10px 0; border-bottom: 1px solid var(--matrix-dim);"><strong>3. INTRODUCCIÓN:</strong> Fundamento teórico y conceptos relevantes</li>
+                        <li style="padding: 10px 0; border-bottom: 1px solid var(--matrix-dim);"><strong>4. MATERIALES:</strong> Lista de equipos y materiales utilizados</li>
+                        <li style="padding: 10px 0; border-bottom: 1px solid var(--matrix-dim);"><strong>5. DESARROLLO:</strong> Procedimiento detallado con mediciones</li>
+                        <li style="padding: 10px 0; border-bottom: 1px solid var(--matrix-dim);"><strong>6. CÁLCULOS:</strong> Fórmulas y operaciones realizadas</li>
+                        <li style="padding: 10px 0; border-bottom: 1px solid var(--matrix-dim);"><strong>7. GRÁFICAS:</strong> Representación visual de datos</li>
+                        <li style="padding: 10px 0; border-bottom: 1px solid var(--matrix-dim);"><strong>8. CONCLUSIONES:</strong> Análisis de resultados y aprendizaje</li>
+                        <li style="padding: 10px 0;"><strong>9. BIBLIOGRAFÍA:</strong> Referencias de fuentes consultadas</li>
+                    </ul>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 20px; padding: 24px; background: linear-gradient(135deg, rgba(0, 255, 65, 0.15), rgba(0, 59, 0, 0.3)); border: 2px solid var(--matrix-green); border-radius: 12px; box-shadow: 0 0 20px rgba(0, 255, 65, 0.4);">
+                    <div style="font-size: 4rem; flex-shrink: 0;">📝</div>
+                    <div style="flex: 1;">
+                        <h3 style="color: var(--matrix-green); font-size: 1.3rem; margin-bottom: 12px;">FORMA DE ENTREGA</h3>
+                        <p style="color: var(--matrix-green); font-size: 1.1rem; margin-bottom: 16px;">El reporte deberá entregarse <strong>A MANO</strong>, ya sea en:</p>
+                        <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                            <div style="padding: 12px 20px; background-color: var(--matrix-dark); border: 1px solid var(--matrix-green); border-radius: 8px; font-weight: 700;">📄 HOJAS SUELTAS</div>
+                            <div style="padding: 12px 20px; background-color: var(--matrix-dark); border: 1px solid var(--matrix-green); border-radius: 8px; font-weight: 700;">📓 LIBRETA / DIARIO</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE CONFIRMACIÓN -->
+    <div class="modal-overlay" id="modalConfirmacion">
+        <div class="modal">
+            <h2>¡RESERVA CONFIRMADA!</h2>
+            <p style="color: var(--matrix-dim); margin: 20px 0;">Tu reserva ha sido guardada exitosamente</p>
+            <div class="confirmation-code">
+                <div class="label">CÓDIGO DE CONFIRMACIÓN</div>
+                <div class="code" id="codigoConfirmacion">------</div>
+            </div>
+            <button class="btn-primary" onclick="closeModal()">ACEPTAR</button>
         </div>
     </div>
 
@@ -446,7 +1058,6 @@
             }
         }
         setInterval(drawMatrix, 35);
-
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
@@ -461,65 +1072,68 @@
         updateDateTime();
         setInterval(updateDateTime, 1000);
 
+        // ========== NAVEGACIÓN ==========
+        function showSection(section) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById('section-' + section).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
         // ========== PROFESORES DATA ==========
         const profesores = {
             estatica: [
-                {nombre: "ALONSO ALVAREZ MARIA ALICIA", horarios: "L17:00-18:00 M17:00-18:00 Mi17:00-18:00 J17:00-18:00 V17:00-18:00", salon: "E3-406"},
-                {nombre: "FLORES SANDOVAL OMAR", horarios: "L14:00-16:00 Mi14:00-16:00 V14:00-15:00", salon: "E1-204"},
-                {nombre: "ORTEGA ZARZOSA GERARDO", horarios: "L08:00-10:00 Mi08:00-10:00 V08:00-09:00", salon: "E3-203"},
-                {nombre: "ACOSTA ESPINOZA MARIBEL MAGDALENA", horarios: "M14:00-16:00 J14:00-16:00 V15:00-16:00", salon: "E3-203"}
+                "ALONSO ÁLVAREZ MARÍA ALICIA - L17-18, M17-18, Mi17-18, J17-18, V17-18 - E3-406",
+                "FLORES SANDOVAL OMAR - L14-16, Mi14-16, V14-15 - E1-204",
+                "ORTEGA ZARZOSA GERARDO - L08-10, Mi08-10, V08-09 - E3-203",
+                "ACOSTA ESPINOZA MARIBEL MAGDALENA - M14-16, J14-16, V15-16 - E3-203"
             ],
             ondas: [
-                {nombre: "MENDEZ MARTINEZ JOSE MANUEL", horarios: "M12:00-14:00 J12:00-14:00 V13:00-14:00", salon: "E1-102"},
-                {nombre: "RAMIREZ ELIAS MIGUEL GHEBRE", horarios: "M12:00-14:00 J12:00-14:00 V13:00-14:00", salon: "E1-101"},
-                {nombre: "ALONSO ALVAREZ MARIA ALICIA", horarios: "M18:00-20:00 J18:00-20:00 V19:00-20:00", salon: "E3-501"},
-                {nombre: "GARCIA GARCIA SALVADOR", horarios: "M12:00-14:00 J12:00-14:00 V13:00-14:00", salon: "E3-501"},
-                {nombre: "OLVERA SOSA MIGUEL ALEJANDRO", horarios: "L08:00-10:00 Mi08:00-10:00 V08:00-09:00", salon: "E1-201"},
-                {nombre: "REYES LOPEZ LUIS EDUARDO", horarios: "L10:00-12:00 Mi10:00-12:00 V10:00-11:00", salon: "E3-204"},
-                {nombre: "RAMIREZ GONZALEZ PEDRO EZEQUIEL", horarios: "L12:00-14:00 M11:30-13:00 J11:30-13:00", salon: "IF-621"}
+                "MÉNDEZ MARTÍNEZ JOSÉ MANUEL - M12-14, J12-14, V13-14 - E1-102",
+                "RAMÍREZ ELÍAS MIGUEL ÁNGEL GHEBRE - M12-14, J12-14, V13-14 - E1-101",
+                "ALONSO ÁLVAREZ MARÍA ALICIA - M18-20, J18-20, V19-20 - E3-501",
+                "GARCÍA GARCÍA SALVADOR - M12-14, J12-14, V13-14 - E3-501",
+                "OLVERA SOSA MIGUEL ALEJANDRO - L08-10, Mi08-10, V08-09 - E1-201",
+                "REYES LÓPEZ LUIS EDUARDO - L10-12, Mi10-12, V10-11 - E3-204",
+                "RAMÍREZ GONZÁLEZ PEDRO EZEQUIEL - L12-14, M11:30-13, J11:30-13 - IF-621",
+                "MÉNDEZ MARTÍNEZ JOSÉ MANUEL - L10-12, Mi10-12, V10-11 - E1-303"
             ],
             electricidad: [
-                {nombre: "CASTILLO SORIA FRANCISCO RUBEN", horarios: "M10:00-12:00 J10:00-12:00 V11:00-12:00", salon: "E3-402"}
+                "CASTILLO SORIA FRANCISCO RUBÉN - M10-12, J10-12, V11-12 - E3-402"
             ]
         };
 
-        // ========== ESTADO ==========
-        let currentStep = 1;
-        let reservaData = {};
+        // ========== ALTA DE ALUMNOS ==========
+        document.getElementById('altaProfesor').addEventListener('change', function() {
+            const value = this.value;
+            const infoDiv = document.getElementById('altaInfo');
+            if (value) {
+                infoDiv.style.display = 'block';
+                infoDiv.innerHTML = '<strong>Información Seleccionada:</strong><br>' + value;
+            } else {
+                infoDiv.style.display = 'none';
+            }
+        });
+
+        function registrarAlta() {
+            const nombre = document.getElementById('altaNombre').value.trim();
+            const profesor = document.getElementById('altaProfesor').value;
+            
+            if (!nombre || !profesor) {
+                alert('Por favor completa todos los campos');
+                return;
+            }
+            
+            alert('¡REGISTRO EXITOSO!\n\nAlumno: ' + nombre + '\nProfesor: ' + profesor);
+            document.getElementById('altaNombre').value = '';
+            document.getElementById('altaProfesor').value = '';
+            document.getElementById('altaInfo').style.display = 'none';
+        }
+
+        // ========== CALENDARIO ==========
         let currentMonth = new Date();
         let selectedDate = null;
         let selectedTime = null;
 
-        // ========== MATERIA/PROFESOR ==========
-        document.getElementById('materia').addEventListener('change', function() {
-            const materia = this.value;
-            const profesorSelect = document.getElementById('profesor');
-            
-            profesorSelect.innerHTML = '<option value="">SELECCIONE...</option>';
-            profesorSelect.disabled = false;
-            
-            if (materia && profesores[materia]) {
-                profesores[materia].forEach((prof, index) => {
-                    const option = document.createElement('option');
-                    option.value = index;
-                    option.textContent = prof.nombre;
-                    profesorSelect.appendChild(option);
-                });
-            }
-            checkStep1();
-        });
-
-        document.getElementById('profesor').addEventListener('change', checkStep1);
-        document.getElementById('nombreAlumno').addEventListener('input', checkStep1);
-
-        function checkStep1() {
-            const materia = document.getElementById('materia').value;
-            const profesor = document.getElementById('profesor').value;
-            const nombre = document.getElementById('nombreAlumno').value.trim();
-            document.getElementById('btnStep1').disabled = !(materia && profesor && nombre);
-        }
-
-        // ========== CALENDARIO ==========
         function renderCalendar() {
             const year = currentMonth.getFullYear();
             const month = currentMonth.getMonth();
@@ -530,19 +1144,18 @@
             const firstDay = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             const today = new Date();
+            today.setHours(0,0,0,0);
             
             const calendarDays = document.getElementById('calendarDays');
             calendarDays.innerHTML = '';
             
-            // Días vacíos
             for (let i = 0; i < firstDay; i++) {
                 calendarDays.innerHTML += '<div class="calendar-day disabled"></div>';
             }
             
-            // Días del mes
             for (let day = 1; day <= daysInMonth; day++) {
                 const date = new Date(year, month, day);
-                const isPast = date < today.setHours(0,0,0,0);
+                const isPast = date < today;
                 const isSelected = selectedDate && selectedDate.toDateString() === date.toDateString();
                 
                 const div = document.createElement('div');
@@ -560,7 +1173,9 @@
         function selectDate(date) {
             selectedDate = date;
             renderCalendar();
-            document.getElementById('btnStep2').disabled = false;
+            document.getElementById('selectedDateText').textContent = 
+                date.toLocaleDateString('es-MX', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'}).toUpperCase();
+            document.getElementById('btnContinue1').disabled = false;
         }
 
         function changeMonth(delta) {
@@ -568,16 +1183,11 @@
             renderCalendar();
         }
 
-        // ========== HORARIOS ==========
+        // ========== TIME SLOTS ==========
         function renderTimeSlots() {
-            const materiaVal = document.getElementById('materia').value;
-            const profesorIdx = document.getElementById('profesor').value;
-            const profesor = profesores[materiaVal][profesorIdx];
-            
             const timeSlotsDiv = document.getElementById('timeSlots');
             timeSlotsDiv.innerHTML = '';
             
-            // Generar horarios de 8:00 a 20:00
             for (let hour = 8; hour <= 20; hour++) {
                 const time = `${hour.toString().padStart(2, '0')}:00`;
                 const div = document.createElement('div');
@@ -596,109 +1206,85 @@
                     slot.classList.add('selected');
                 }
             });
-            document.getElementById('btnStep3').disabled = false;
+            document.getElementById('btnContinue2').disabled = false;
         }
 
-        // ========== NAVEGACIÓN ==========
-        function nextStep(step) {
-            // Guardar datos
-            if (step === 2) {
-                const materiaVal = document.getElementById('materia').value;
-                const profesorIdx = document.getElementById('profesor').value;
-                const materiaTexto = document.getElementById('materia').options[document.getElementById('materia').selectedIndex].text;
-                
-                reservaData.materia = materiaTexto;
-                reservaData.profesor = profesores[materiaVal][profesorIdx];
-                reservaData.nombreAlumno = document.getElementById('nombreAlumno').value;
-                
-                document.getElementById('infoStep1').innerHTML = `
-                    <strong>MATERIA:</strong> ${reservaData.materia}<br>
-                    <strong>PROFESOR:</strong> ${reservaData.profesor.nombre}<br>
-                    <strong>ALUMNO:</strong> ${reservaData.nombreAlumno}
-                `;
-                renderCalendar();
-            }
-            
-            if (step === 3) {
-                reservaData.fecha = selectedDate.toLocaleDateString('es-MX');
-                document.getElementById('infoStep2').innerHTML = `
-                    <strong>MATERIA:</strong> ${reservaData.materia}<br>
-                    <strong>PROFESOR:</strong> ${reservaData.profesor.nombre}<br>
-                    <strong>FECHA:</strong> ${reservaData.fecha}
-                `;
-                renderTimeSlots();
-            }
-            
-            if (step === 4) {
-                reservaData.hora = selectedTime;
-                document.getElementById('infoStep3').innerHTML = `
-                    <strong>ALUMNO:</strong> ${reservaData.nombreAlumno}<br>
-                    <strong>MATERIA:</strong> ${reservaData.materia}<br>
-                    <strong>PROFESOR:</strong> ${reservaData.profesor.nombre}<br>
-                    <strong>SALÓN:</strong> ${reservaData.profesor.salon}<br>
-                    <strong>FECHA:</strong> ${reservaData.fecha}<br>
-                    <strong>HORA:</strong> ${reservaData.hora}
-                `;
-            }
-            
-            // Cambiar sección
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.getElementById('section' + step).classList.add('active');
+        // ========== RESERVACIÓN PASOS ==========
+        function reserveNextStep(step) {
+            document.querySelectorAll('.reserve-step').forEach(s => s.style.display = 'none');
+            document.getElementById('reserveStep' + step).style.display = 'block';
             
             document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-            document.getElementById('step' + step).classList.add('active');
+            document.getElementById('stepInd' + step).classList.add('active');
             
-            currentStep = step;
+            if (step === 2) renderTimeSlots();
+            
+            window.scrollTo(0, 0);
         }
 
-        // ========== RESERVAS ==========
-        let reservas = JSON.parse(localStorage.getItem('reservas')) || [];
+        // ========== MATERIA/PROFESOR EN RESERVA ==========
+        document.getElementById('equipoMateria').addEventListener('change', function() {
+            const materia = this.value;
+            const profesorSelect = document.getElementById('equipoProfesor');
+            
+            profesorSelect.innerHTML = '<option value="">SELECCIONAR GRUPO</option>';
+            profesorSelect.disabled = false;
+            
+            if (materia && profesores[materia]) {
+                profesores[materia].forEach(prof => {
+                    const option = document.createElement('option');
+                    option.value = prof;
+                    option.textContent = prof;
+                    profesorSelect.appendChild(option);
+                });
+            }
+        });
 
+        // ========== INTEGRANTES ==========
+        function changeIntegrantes(delta) {
+            const input = document.getElementById('equipoIntegrantes');
+            let value = parseInt(input.value) + delta;
+            if (value >= 1 && value <= 6) {
+                input.value = value;
+            }
+        }
+
+        // ========== CONFIRMAR RESERVA ==========
         function confirmarReserva() {
-            reservas.push({
-                id: Date.now(),
-                ...reservaData
-            });
-            localStorage.setItem('reservas', JSON.stringify(reservas));
+            const nombre = document.getElementById('equipoNombre').value.trim();
+            const materia = document.getElementById('equipoMateria').value;
+            const profesor = document.getElementById('equipoProfesor').value;
+            const responsable = document.getElementById('equipoResponsable').value.trim();
+            const correo = document.getElementById('equipoCorreo').value.trim();
             
-            alert('¡RESERVA CONFIRMADA CON ÉXITO!');
-            
-            // Reset
-            location.reload();
-        }
-
-        function mostrarReservas() {
-            const lista = document.getElementById('listaReservas');
-            lista.innerHTML = '';
-            
-            if (reservas.length === 0) {
-                lista.innerHTML = '<li style="text-align: center;">NO HAY RESERVAS AÚN</li>';
+            if (!nombre || !materia || !profesor || !responsable || !correo) {
+                alert('Por favor completa todos los campos obligatorios (*)');
                 return;
             }
             
-            reservas.forEach(r => {
-                const li = document.createElement('li');
-                li.innerHTML = `
-                    <strong>▸ ${r.nombreAlumno}</strong><br>
-                    📚 ${r.materia}<br>
-                    👨‍🏫 ${r.profesor.nombre}<br>
-                    🏫 ${r.profesor.salon}<br>
-                    📅 ${r.fecha} ⏰ ${r.hora}
-                    <button class="btn-delete" onclick="eliminar(${r.id})">ELIMINAR</button>
-                `;
-                lista.appendChild(li);
-            });
+            const codigo = 'RES-' + Date.now().toString().slice(-6);
+            document.getElementById('codigoConfirmacion').textContent = codigo;
+            document.getElementById('modalConfirmacion').classList.add('active');
         }
 
-        function eliminar(id) {
-            if (confirm('¿ELIMINAR RESERVA?')) {
-                reservas = reservas.filter(r => r.id !== id);
-                localStorage.setItem('reservas', JSON.stringify(reservas));
-                mostrarReservas();
-            }
+        function closeModal() {
+            document.getElementById('modalConfirmacion').classList.remove('active');
+            showSection('landing');
+            
+            // Reset form
+            document.getElementById('equipoNombre').value = '';
+            document.getElementById('equipoMateria').value = '';
+            document.getElementById('equipoProfesor').value = '';
+            document.getElementById('equipoResponsable').value = '';
+            document.getElementById('equipoCorreo').value = '';
+            document.getElementById('equipoObservaciones').value = '';
+            document.getElementById('equipoIntegrantes').value = '1';
+            selectedDate = null;
+            selectedTime = null;
         }
 
-        mostrarReservas();
+        // ========== INICIALIZACIÓN ==========
+        renderCalendar();
     </script>
 </body>
 </html>
