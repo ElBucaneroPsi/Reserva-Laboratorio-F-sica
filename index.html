@@ -58,13 +58,6 @@
             text-align: center;
         }
 
-        .header-logo {
-            max-width: 100px;
-            max-height: 100px;
-            margin-bottom: 10px;
-            filter: drop-shadow(0 0 10px var(--matrix-green));
-        }
-
         .header h1 {
             font-size: 1.5rem;
             font-weight: 700;
@@ -1361,9 +1354,9 @@
 
     <script>
         // ═════════════════════════════════════════════════════════════════
-        // CONFIGURACIÓN - URL DE GOOGLE APPS SCRIPT
+        // CONFIGURACIÓN - REEMPLAZA "TU_URL_AQUI" CON LA URL DE TU SCRIPT
         // ═════════════════════════════════════════════════════════════════
-        var GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzUBoFdJCXgHqcTQPES-FzAhoZvLb_pwuBn_Xx6JCocOA9pDQhjo-G_iwOCKczN0_BX9w/exec';
+        var GOOGLE_SCRIPT_URL = 'TU_URL_AQUI';  // <-- CAMBIA ESTO POR TU URL REAL
         
         // Variables globales
         var currentStep = 1;
@@ -1671,7 +1664,7 @@
         }
 
         // ═════════════════════════════════════════════════════════════════
-        // ENVÍO DE DATOS A GOOGLE SHEETS (MÉTODO POST CON REDIRECCIÓN)
+        // ENVÍO DE DATOS A GOOGLE SHEETS
         // ═════════════════════════════════════════════════════════════════
         
         function submitReservation() {
@@ -1771,23 +1764,20 @@
             });
         }
 
-        // MÉTODO DE ENVÍO CON FORMULARIO OCULTO (EVITA CORS)
+        // MÉTODO DE ENVÍO CON FORMULARIO OCULTO
         function sendToGoogleScript(data, onSuccess, onError) {
-            // Crear formulario oculto
             var form = document.createElement('form');
             form.method = 'POST';
             form.action = GOOGLE_SCRIPT_URL;
             form.target = 'hidden-iframe-' + Date.now();
             form.style.display = 'none';
 
-            // Campo con los datos JSON
             var input = document.createElement('input');
             input.type = 'hidden';
             input.name = 'data';
             input.value = JSON.stringify(data);
             form.appendChild(input);
 
-            // Crear iframe único para esta petición
             var iframeId = form.target;
             var iframe = document.createElement('iframe');
             iframe.name = iframeId;
@@ -1797,10 +1787,9 @@
             iframe.style.height = '1px';
             iframe.style.opacity = '0';
 
-            // Manejar respuesta
             var timeout = setTimeout(function() {
                 cleanup();
-                onSuccess(); // Asumimos éxito si no hay error en 5 segundos
+                onSuccess();
             }, 5000);
 
             iframe.onload = function() {
