@@ -1963,64 +1963,84 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
         }
 
         function submitAlta() {
-            var isValid = true;
-            var name = document.getElementById('altaName').value.trim();
-            var professor = document.getElementById('altaProfessor').value;
-            
-            // Validar nombre
-            if (!name) {
-                document.getElementById('altaName').classList.add('error');
-                document.getElementById('altaNameError').textContent = 'OBLIGATORIO';
-                isValid = false;
-            } else {
-                document.getElementById('altaName').classList.remove('error');
-                document.getElementById('altaNameError').textContent = '';
-            }
-            
-            // Validar profesor seleccionado
-            if (!professor) {
-                document.getElementById('altaProfessor').classList.add('error');
-                document.getElementById('altaProfessorError').textContent = 'SELECCIONA UN PROFESOR';
-                isValid = false;
-            } else {
-                document.getElementById('altaProfessor').classList.remove('error');
-                document.getElementById('altaProfessorError').textContent = '';
-            }
-            
-            if (!isValid) {
-                showToast('COMPLETA TODOS LOS CAMPOS OBLIGATORIOS', 'error');
-                return;
-            }
+    var isValid = true;
+    var name = document.getElementById('altaName').value.trim();
+    var professor = document.getElementById('altaProfessor').value;
+    
+    // Validar nombre
+    if (!name) {
+        document.getElementById('altaName').classList.add('error');
+        document.getElementById('altaNameError').textContent = 'OBLIGATORIO';
+        isValid = false;
+    } else {
+        document.getElementById('altaName').classList.remove('error');
+        document.getElementById('altaNameError').textContent = '';
+    }
+    
+    // Validar profesor seleccionado
+    if (!professor) {
+        document.getElementById('altaProfessor').classList.add('error');
+        document.getElementById('altaProfessorError').textContent = 'SELECCIONA UN PROFESOR';
+        isValid = false;
+    } else {
+        document.getElementById('altaProfessor').classList.remove('error');
+        document.getElementById('altaProfessorError').textContent = '';
+    }
+    
+    if (!isValid) {
+        showToast('COMPLETA TODOS LOS CAMPOS OBLIGATORIOS', 'error');
+        return;
+    }
 
-            var submitBtn = document.getElementById('submitAlta');
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span class="spinner"></span> GUARDANDO...';
-            
-            // Parsear la información del profesor
-            var profParts = professor.split(' - ');
-            var profName = profParts[0] || '';
-            var profSchedule = profParts[1] || '';
-            var profAula = profParts[2] || '';
-            
-            var altaData = {
-                action: 'register',
-                nombre: name,
-                profesor: profName,
-                horario: profSchedule,
-                aula: profAula
-            };
+    var submitBtn = document.getElementById('submitAlta');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner"></span> GUARDANDO...';
+    
+    // Parsear la información del profesor
+    var profParts = professor.split(' - ');
+    var profName = profParts[0] || '';
+    var profSchedule = profParts[1] || '';
+    var profAula = profParts[2] || '';
+    
+    // Log para ver qué se está enviando
+    console.log('Datos a enviar:', {
+        nombre: name,
+        profesor: profName,
+        horario: profSchedule,
+        aula: profAula
+    });
+    
+    var altaData = {
+        action: 'register',
+        nombre: name,
+        profesor: profName,
+        horario: profSchedule,
+        aula: profAula
+    };
 
-            var GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyc24-AnAc5HoubViuZcfIBcw37eHWammGVeMfd1ijEbATUiHhzvQYOTBH9v0uQjpVhEg/exec';
-            
-            fetch(GOOGLE_SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: {
-                    'Content-Type': 'text/plain;charset=utf-8'
-                },
-                body: JSON.stringify(altaData)
-            });
-
+    // USAR LA MISMA URL QUE PARA RESERVACIONES
+    fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(altaData)
+    })
+    .then(function() {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'REGISTRAR ALTA';
+        document.getElementById('altaForm').reset();
+        document.getElementById('altaInfo').value = '';
+        showSuccess('REGISTRO EXITOSO', 'Tu alta ha sido guardada correctamente.', 'ALT' + Math.random().toString(36).substr(2, 6).toUpperCase());
+    })
+    .catch(function(error) {
+        console.error('Error:', error);
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'REGISTRAR ALTA';
+        showToast('ERROR AL REGISTRAR. INTENTA DE NUEVO.', 'error');
+    });
+}
             setTimeout(function() {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = 'REGISTRAR ALTA';
