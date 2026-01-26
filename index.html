@@ -29,7 +29,7 @@
         }
 
         .container {
-            max-width: 600px;
+            max-width: 900px;
             margin: 0 auto;
             background: rgba(13, 13, 13, 0.95);
             padding: 40px;
@@ -63,10 +63,41 @@
             border-radius: 4px;
         }
 
-        form {
+        .step-indicator {
             display: flex;
-            flex-direction: column;
-            gap: 20px;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .step {
+            padding: 10px 20px;
+            border: 2px solid #008F11;
+            border-radius: 6px;
+            color: #008F11;
+            font-weight: bold;
+        }
+
+        .step.active {
+            background: #00FF41;
+            color: #000000;
+            border-color: #00FF41;
+            box-shadow: 0 0 15px #00FF41;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         label {
@@ -77,7 +108,7 @@
             letter-spacing: 1px;
         }
 
-        input, select {
+        select, input {
             width: 100%;
             padding: 14px;
             background: #0D0D0D;
@@ -86,11 +117,120 @@
             color: #00FF41;
             font-family: 'Courier New', monospace;
             font-size: 1rem;
+            margin-bottom: 20px;
         }
 
-        input:focus, select:focus {
+        select:focus, input:focus {
             outline: none;
             box-shadow: 0 0 15px #00FF41;
+        }
+
+        .calendar {
+            background: #0D0D0D;
+            border: 2px solid #00FF41;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .calendar-header button {
+            background: transparent;
+            border: 2px solid #00FF41;
+            color: #00FF41;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .calendar-header button:hover {
+            background: #00FF41;
+            color: #000000;
+        }
+
+        .calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .calendar-weekdays div {
+            color: #008F11;
+            font-weight: bold;
+            padding: 10px 0;
+        }
+
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #003B00;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .calendar-day:hover:not(.disabled) {
+            background: #00FF41;
+            color: #000000;
+            box-shadow: 0 0 10px #00FF41;
+        }
+
+        .calendar-day.selected {
+            background: #00FF41;
+            color: #000000;
+            font-weight: bold;
+            box-shadow: 0 0 15px #00FF41;
+        }
+
+        .calendar-day.disabled {
+            color: #003B00;
+            cursor: not-allowed;
+        }
+
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .time-slot {
+            padding: 12px;
+            background: #0D0D0D;
+            border: 2px solid #00FF41;
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .time-slot:hover {
+            background: #00FF41;
+            color: #000000;
+            box-shadow: 0 0 15px #00FF41;
+        }
+
+        .time-slot.selected {
+            background: #00FF41;
+            color: #000000;
+            font-weight: bold;
         }
 
         button {
@@ -104,10 +244,36 @@
             cursor: pointer;
             letter-spacing: 2px;
             font-family: 'Courier New', monospace;
+            width: 100%;
+            margin-top: 20px;
         }
 
         button:hover {
             box-shadow: 0 0 25px #00FF41;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid #00FF41;
+            color: #00FF41;
+        }
+
+        .btn-secondary:hover {
+            background: #00FF41;
+            color: #000000;
+        }
+
+        .info-selected {
+            background: rgba(0, 255, 65, 0.1);
+            border: 2px solid #00FF41;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
         }
 
         #reservas {
@@ -147,6 +313,20 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 0.85rem;
+            width: auto;
+            margin: 0;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+            .time-slots {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
     </style>
 </head>
@@ -157,37 +337,82 @@
         <h1>🔬 LABORATORIO DE FÍSICA</h1>
         <h2>SISTEMA DE RESERVAS - UASLP</h2>
         <div class="datetime" id="currentDateTime"></div>
-        
-        <form id="reservaForm">
-            <div>
-                <label>NOMBRE COMPLETO:</label>
-                <input type="text" id="nombre" required>
-            </div>
+
+        <div class="step-indicator">
+            <div class="step active" id="step1">1. MATERIA Y PROFESOR</div>
+            <div class="step" id="step2">2. FECHA</div>
+            <div class="step" id="step3">3. HORA</div>
+            <div class="step" id="step4">4. CONFIRMAR</div>
+        </div>
+
+        <!-- PASO 1: MATERIA Y PROFESOR -->
+        <div id="section1" class="section active">
+            <label>MATERIA:</label>
+            <select id="materia">
+                <option value="">SELECCIONE...</option>
+                <option value="estatica">ESTÁTICA Y DINÁMICA</option>
+                <option value="ondas">ONDAS Y TERMODINÁMICA</option>
+                <option value="electricidad">ELECTRICIDAD Y MAGNETISMO</option>
+            </select>
+
+            <label>PROFESOR:</label>
+            <select id="profesor" disabled>
+                <option value="">PRIMERO SELECCIONE MATERIA</option>
+            </select>
+
+            <label>NOMBRE COMPLETO:</label>
+            <input type="text" id="nombreAlumno" placeholder="Ingresa tu nombre">
+
+            <button onclick="nextStep(2)" id="btnStep1" disabled>CONTINUAR →</button>
+        </div>
+
+        <!-- PASO 2: CALENDARIO -->
+        <div id="section2" class="section">
+            <div class="info-selected" id="infoStep1"></div>
             
-            <div>
-                <label>FECHA:</label>
-                <input type="date" id="fecha" required>
+            <label>SELECCIONA LA FECHA:</label>
+            <div class="calendar">
+                <div class="calendar-header">
+                    <button onclick="changeMonth(-1)">◄</button>
+                    <span id="currentMonth"></span>
+                    <button onclick="changeMonth(1)">►</button>
+                </div>
+                <div class="calendar-weekdays">
+                    <div>DOM</div>
+                    <div>LUN</div>
+                    <div>MAR</div>
+                    <div>MIÉ</div>
+                    <div>JUE</div>
+                    <div>VIE</div>
+                    <div>SÁB</div>
+                </div>
+                <div class="calendar-days" id="calendarDays"></div>
             </div>
+
+            <button class="btn-secondary" onclick="nextStep(1)">← REGRESAR</button>
+            <button onclick="nextStep(3)" id="btnStep2" disabled>CONTINUAR →</button>
+        </div>
+
+        <!-- PASO 3: HORA -->
+        <div id="section3" class="section">
+            <div class="info-selected" id="infoStep2"></div>
             
-            <div>
-                <label>HORA:</label>
-                <input type="time" id="hora" required>
-            </div>
-            
-            <div>
-                <label>TIPO DE EXPERIMENTO:</label>
-                <select id="experimento" required>
-                    <option value="">SELECCIONE...</option>
-                    <option value="mecanica">Mecánica</option>
-                    <option value="electromagnetismo">Electromagnetismo</option>
-                    <option value="optica">Óptica</option>
-                    <option value="termodinamica">Termodinámica</option>
-                </select>
-            </div>
-            
-            <button type="submit">RESERVAR</button>
-        </form>
-        
+            <label>SELECCIONA LA HORA:</label>
+            <div class="time-slots" id="timeSlots"></div>
+
+            <button class="btn-secondary" onclick="nextStep(2)">← REGRESAR</button>
+            <button onclick="nextStep(4)" id="btnStep3" disabled>CONTINUAR →</button>
+        </div>
+
+        <!-- PASO 4: CONFIRMACIÓN -->
+        <div id="section4" class="section">
+            <h3>CONFIRMA TU RESERVA:</h3>
+            <div class="info-selected" id="infoStep3"></div>
+
+            <button class="btn-secondary" onclick="nextStep(3)">← REGRESAR</button>
+            <button onclick="confirmarReserva()">✓ CONFIRMAR RESERVA</button>
+        </div>
+
         <div id="reservas">
             <h3>RESERVAS ACTIVAS</h3>
             <ul id="listaReservas"></ul>
@@ -195,7 +420,7 @@
     </div>
 
     <script>
-        // Matrix Rain
+        // ========== MATRIX RAIN ==========
         const canvas = document.getElementById('matrix-canvas');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
@@ -222,7 +447,12 @@
         }
         setInterval(drawMatrix, 35);
 
-        // DateTime
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // ========== DATETIME ==========
         function updateDateTime() {
             const now = new Date();
             document.getElementById('currentDateTime').textContent = 
@@ -231,38 +461,234 @@
         updateDateTime();
         setInterval(updateDateTime, 1000);
 
-        // Reservations
-        let reservas = JSON.parse(localStorage.getItem('reservas')) || [];
-        const form = document.getElementById('reservaForm');
-        const listaReservas = document.getElementById('listaReservas');
+        // ========== PROFESORES DATA ==========
+        const profesores = {
+            estatica: [
+                {nombre: "ALONSO ALVAREZ MARIA ALICIA", horarios: "L17:00-18:00 M17:00-18:00 Mi17:00-18:00 J17:00-18:00 V17:00-18:00", salon: "E3-406"},
+                {nombre: "FLORES SANDOVAL OMAR", horarios: "L14:00-16:00 Mi14:00-16:00 V14:00-15:00", salon: "E1-204"},
+                {nombre: "ORTEGA ZARZOSA GERARDO", horarios: "L08:00-10:00 Mi08:00-10:00 V08:00-09:00", salon: "E3-203"},
+                {nombre: "ACOSTA ESPINOZA MARIBEL MAGDALENA", horarios: "M14:00-16:00 J14:00-16:00 V15:00-16:00", salon: "E3-203"}
+            ],
+            ondas: [
+                {nombre: "MENDEZ MARTINEZ JOSE MANUEL", horarios: "M12:00-14:00 J12:00-14:00 V13:00-14:00", salon: "E1-102"},
+                {nombre: "RAMIREZ ELIAS MIGUEL GHEBRE", horarios: "M12:00-14:00 J12:00-14:00 V13:00-14:00", salon: "E1-101"},
+                {nombre: "ALONSO ALVAREZ MARIA ALICIA", horarios: "M18:00-20:00 J18:00-20:00 V19:00-20:00", salon: "E3-501"},
+                {nombre: "GARCIA GARCIA SALVADOR", horarios: "M12:00-14:00 J12:00-14:00 V13:00-14:00", salon: "E3-501"},
+                {nombre: "OLVERA SOSA MIGUEL ALEJANDRO", horarios: "L08:00-10:00 Mi08:00-10:00 V08:00-09:00", salon: "E1-201"},
+                {nombre: "REYES LOPEZ LUIS EDUARDO", horarios: "L10:00-12:00 Mi10:00-12:00 V10:00-11:00", salon: "E3-204"},
+                {nombre: "RAMIREZ GONZALEZ PEDRO EZEQUIEL", horarios: "L12:00-14:00 M11:30-13:00 J11:30-13:00", salon: "IF-621"}
+            ],
+            electricidad: [
+                {nombre: "CASTILLO SORIA FRANCISCO RUBEN", horarios: "M10:00-12:00 J10:00-12:00 V11:00-12:00", salon: "E3-402"}
+            ]
+        };
 
-        function mostrarReservas() {
-            listaReservas.innerHTML = '';
-            if (reservas.length === 0) {
-                listaReservas.innerHTML = '<li>NO HAY RESERVAS AÚN</li>';
-                return;
+        // ========== ESTADO ==========
+        let currentStep = 1;
+        let reservaData = {};
+        let currentMonth = new Date();
+        let selectedDate = null;
+        let selectedTime = null;
+
+        // ========== MATERIA/PROFESOR ==========
+        document.getElementById('materia').addEventListener('change', function() {
+            const materia = this.value;
+            const profesorSelect = document.getElementById('profesor');
+            
+            profesorSelect.innerHTML = '<option value="">SELECCIONE...</option>';
+            profesorSelect.disabled = false;
+            
+            if (materia && profesores[materia]) {
+                profesores[materia].forEach((prof, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = prof.nombre;
+                    profesorSelect.appendChild(option);
+                });
             }
-            reservas.forEach(r => {
-                const li = document.createElement('li');
-                li.innerHTML = `<strong>▸ ${r.nombre}</strong><br>📅 ${r.fecha} ⏰ ${r.hora}<br>🔬 ${r.experimento}<button class="btn-delete" onclick="eliminar(${r.id})">ELIMINAR</button>`;
-                listaReservas.appendChild(li);
-            });
+            checkStep1();
+        });
+
+        document.getElementById('profesor').addEventListener('change', checkStep1);
+        document.getElementById('nombreAlumno').addEventListener('input', checkStep1);
+
+        function checkStep1() {
+            const materia = document.getElementById('materia').value;
+            const profesor = document.getElementById('profesor').value;
+            const nombre = document.getElementById('nombreAlumno').value.trim();
+            document.getElementById('btnStep1').disabled = !(materia && profesor && nombre);
         }
 
-        form.addEventListener('submit', e => {
-            e.preventDefault();
+        // ========== CALENDARIO ==========
+        function renderCalendar() {
+            const year = currentMonth.getFullYear();
+            const month = currentMonth.getMonth();
+            
+            document.getElementById('currentMonth').textContent = 
+                currentMonth.toLocaleDateString('es-MX', {month: 'long', year: 'numeric'}).toUpperCase();
+            
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const today = new Date();
+            
+            const calendarDays = document.getElementById('calendarDays');
+            calendarDays.innerHTML = '';
+            
+            // Días vacíos
+            for (let i = 0; i < firstDay; i++) {
+                calendarDays.innerHTML += '<div class="calendar-day disabled"></div>';
+            }
+            
+            // Días del mes
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(year, month, day);
+                const isPast = date < today.setHours(0,0,0,0);
+                const isSelected = selectedDate && selectedDate.toDateString() === date.toDateString();
+                
+                const div = document.createElement('div');
+                div.className = 'calendar-day' + (isPast ? ' disabled' : '') + (isSelected ? ' selected' : '');
+                div.textContent = day;
+                
+                if (!isPast) {
+                    div.onclick = () => selectDate(date);
+                }
+                
+                calendarDays.appendChild(div);
+            }
+        }
+
+        function selectDate(date) {
+            selectedDate = date;
+            renderCalendar();
+            document.getElementById('btnStep2').disabled = false;
+        }
+
+        function changeMonth(delta) {
+            currentMonth.setMonth(currentMonth.getMonth() + delta);
+            renderCalendar();
+        }
+
+        // ========== HORARIOS ==========
+        function renderTimeSlots() {
+            const materiaVal = document.getElementById('materia').value;
+            const profesorIdx = document.getElementById('profesor').value;
+            const profesor = profesores[materiaVal][profesorIdx];
+            
+            const timeSlotsDiv = document.getElementById('timeSlots');
+            timeSlotsDiv.innerHTML = '';
+            
+            // Generar horarios de 8:00 a 20:00
+            for (let hour = 8; hour <= 20; hour++) {
+                const time = `${hour.toString().padStart(2, '0')}:00`;
+                const div = document.createElement('div');
+                div.className = 'time-slot';
+                div.textContent = time;
+                div.onclick = () => selectTime(time);
+                timeSlotsDiv.appendChild(div);
+            }
+        }
+
+        function selectTime(time) {
+            selectedTime = time;
+            document.querySelectorAll('.time-slot').forEach(slot => {
+                slot.classList.remove('selected');
+                if (slot.textContent === time) {
+                    slot.classList.add('selected');
+                }
+            });
+            document.getElementById('btnStep3').disabled = false;
+        }
+
+        // ========== NAVEGACIÓN ==========
+        function nextStep(step) {
+            // Guardar datos
+            if (step === 2) {
+                const materiaVal = document.getElementById('materia').value;
+                const profesorIdx = document.getElementById('profesor').value;
+                const materiaTexto = document.getElementById('materia').options[document.getElementById('materia').selectedIndex].text;
+                
+                reservaData.materia = materiaTexto;
+                reservaData.profesor = profesores[materiaVal][profesorIdx];
+                reservaData.nombreAlumno = document.getElementById('nombreAlumno').value;
+                
+                document.getElementById('infoStep1').innerHTML = `
+                    <strong>MATERIA:</strong> ${reservaData.materia}<br>
+                    <strong>PROFESOR:</strong> ${reservaData.profesor.nombre}<br>
+                    <strong>ALUMNO:</strong> ${reservaData.nombreAlumno}
+                `;
+                renderCalendar();
+            }
+            
+            if (step === 3) {
+                reservaData.fecha = selectedDate.toLocaleDateString('es-MX');
+                document.getElementById('infoStep2').innerHTML = `
+                    <strong>MATERIA:</strong> ${reservaData.materia}<br>
+                    <strong>PROFESOR:</strong> ${reservaData.profesor.nombre}<br>
+                    <strong>FECHA:</strong> ${reservaData.fecha}
+                `;
+                renderTimeSlots();
+            }
+            
+            if (step === 4) {
+                reservaData.hora = selectedTime;
+                document.getElementById('infoStep3').innerHTML = `
+                    <strong>ALUMNO:</strong> ${reservaData.nombreAlumno}<br>
+                    <strong>MATERIA:</strong> ${reservaData.materia}<br>
+                    <strong>PROFESOR:</strong> ${reservaData.profesor.nombre}<br>
+                    <strong>SALÓN:</strong> ${reservaData.profesor.salon}<br>
+                    <strong>FECHA:</strong> ${reservaData.fecha}<br>
+                    <strong>HORA:</strong> ${reservaData.hora}
+                `;
+            }
+            
+            // Cambiar sección
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById('section' + step).classList.add('active');
+            
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById('step' + step).classList.add('active');
+            
+            currentStep = step;
+        }
+
+        // ========== RESERVAS ==========
+        let reservas = JSON.parse(localStorage.getItem('reservas')) || [];
+
+        function confirmarReserva() {
             reservas.push({
                 id: Date.now(),
-                nombre: document.getElementById('nombre').value,
-                fecha: document.getElementById('fecha').value,
-                hora: document.getElementById('hora').value,
-                experimento: document.getElementById('experimento').value
+                ...reservaData
             });
             localStorage.setItem('reservas', JSON.stringify(reservas));
-            form.reset();
-            mostrarReservas();
-            alert('¡RESERVA REALIZADA!');
-        });
+            
+            alert('¡RESERVA CONFIRMADA CON ÉXITO!');
+            
+            // Reset
+            location.reload();
+        }
+
+        function mostrarReservas() {
+            const lista = document.getElementById('listaReservas');
+            lista.innerHTML = '';
+            
+            if (reservas.length === 0) {
+                lista.innerHTML = '<li style="text-align: center;">NO HAY RESERVAS AÚN</li>';
+                return;
+            }
+            
+            reservas.forEach(r => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <strong>▸ ${r.nombreAlumno}</strong><br>
+                    📚 ${r.materia}<br>
+                    👨‍🏫 ${r.profesor.nombre}<br>
+                    🏫 ${r.profesor.salon}<br>
+                    📅 ${r.fecha} ⏰ ${r.hora}
+                    <button class="btn-delete" onclick="eliminar(${r.id})">ELIMINAR</button>
+                `;
+                lista.appendChild(li);
+            });
+        }
 
         function eliminar(id) {
             if (confirm('¿ELIMINAR RESERVA?')) {
