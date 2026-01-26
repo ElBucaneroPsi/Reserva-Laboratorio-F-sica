@@ -1,12 +1,9 @@
 <!DOCTYPE html>
-<!-- saved from url=(0038)https://sh76w8sqc548.space.minimax.io/ -->
-<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style>body {transition: opacity ease-in 0.2s; } 
-body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relative; } 
-</style>
-    
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Laboratorio de Física - UASLP</title>
-    <link href="./Laboratorio de Física - UASLP_files/css2" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -14,25 +11,14 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
             box-sizing: border-box;
         }
 
-        :root {
-            --matrix-green: #00FF41;
-            --matrix-dark: #003B00;
-            --matrix-black: #0D0D0D;
-            --matrix-bg: #000000;
-            --matrix-dim: #008F11;
-            --matrix-glow: 0 0 10px #00FF41, 0 0 20px #00FF41;
-            --matrix-error: #FF3333;
-        }
-
         body {
-            font-family: 'Roboto Mono', 'Courier New', monospace;
-            background-color: var(--matrix-bg);
-            color: var(--matrix-green);
+            font-family: 'Courier New', monospace;
+            background-color: #000000;
+            color: #00FF41;
             min-height: 100vh;
-            overflow-x: hidden;
+            padding: 20px;
         }
 
-        /* Matrix Rain Canvas */
         #matrix-canvas {
             position: fixed;
             top: 0;
@@ -40,969 +26,253 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
             width: 100%;
             height: 100%;
             z-index: -1;
-            pointer-events: none;
         }
 
-        .app-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Header Estilo Matrix */
-        .header {
-            background-color: rgba(13, 13, 13, 0.95);
-            border: 2px solid var(--matrix-green);
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 24px;
-            box-shadow: var(--matrix-glow);
-            text-align: center;
-        }
-
-        .header-logo {
-            max-width: 100px;
-            max-height: 100px;
-            margin-bottom: 10px;
-            filter: drop-shadow(0 0 10px var(--matrix-green));
-            background: transparent;
-            border: none;
-        }
-
-        .header h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--matrix-green);
-            text-shadow: var(--matrix-glow);
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .header .subtitle {
-            font-size: 0.9rem;
-            color: var(--matrix-dim);
-            margin-bottom: 5px;
-        }
-
-        .header .professor {
-            font-size: 1rem;
-            color: var(--matrix-green);
-            font-weight: 500;
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px solid var(--matrix-dim);
-        }
-
-        .header-datetime {
-            font-size: 0.85rem;
-            color: var(--matrix-dim);
-            margin-top: 10px;
-            padding: 8px 15px;
-            border: 1px solid var(--matrix-dim);
-            border-radius: 4px;
-            display: inline-block;
-            background: rgba(0, 59, 0, 0.3);
-        }
-
-        /* Navigation - Back Button */
-        .nav-back {
-            margin-bottom: 20px;
-        }
-
-        .btn-back {
-            background: transparent;
-            border: 1px solid var(--matrix-green);
-            color: var(--matrix-green);
-            padding: 10px 20px;
-            font-family: inherit;
-            font-size: 0.9rem;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: all 0.3s;
-        }
-
-        .btn-back:hover {
-            background: var(--matrix-green);
-            color: var(--matrix-bg);
-            box-shadow: 0 0 15px var(--matrix-green);
-        }
-
-        /* Section Visibility */
-        .section {
-            display: none;
-        }
-
-        .section.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Landing Page - Main Menu */
-        .landing-menu {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 24px;
-            margin-top: 40px;
-        }
-
-        .menu-card {
-            background: rgba(13, 13, 13, 0.9);
-            border: 2px solid var(--matrix-green);
-            border-radius: 8px;
-            padding: 40px 30px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 0 10px var(--matrix-dim);
-        }
-
-        .menu-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 0 25px var(--matrix-green);
-            background: rgba(0, 255, 65, 0.05);
-        }
-
-        .menu-card .icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
-            text-shadow: var(--matrix-glow);
-        }
-
-        .menu-card h2 {
-            font-size: 1.4rem;
-            color: var(--matrix-green);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 10px;
-        }
-
-        .menu-card p {
-            color: var(--matrix-dim);
-            font-size: 0.9rem;
-        }
-
-        /* Booking Card */
-        .booking-card {
-            background-color: rgba(13, 13, 13, 0.95);
-            border: 2px solid var(--matrix-green);
-            border-radius: 8px;
-            padding: 24px;
-            box-shadow: 0 0 10px var(--matrix-dim);
-        }
-
-               /* Rol de Prácticas Table Styles */
-        .rol-table-container {
-            overflow-x: auto;
-            margin-top: 20px;
-            border-radius: 8px;
-            border: 1px solid var(--matrix-green);
-            background-color: rgba(13, 13, 13, 0.98);
-            padding: 20px;
-            box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
-        }
-        
-        .rol-table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 800px;
-        }
-        
-        .rol-table th,
-        .rol-table td {
-            padding: 14px 12px;
-            text-align: left;
-            border: 1px solid var(--matrix-green);
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--matrix-green);
-            background-color: rgba(0, 0, 0, 0.8);
-        }
-        
-        .rol-table th {
-            background-color: var(--matrix-dark);
-            color: var(--matrix-green);
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border: 2px solid var(--matrix-green);
-        }
-        
-        .rol-table tbody tr:nth-child(even) {
-            background-color: rgba(0, 59, 0, 0.5);
-        }
-        
-        .rol-table tbody tr:hover {
-            background-color: rgba(0, 255, 65, 0.2);
-        }
-        
-        .rol-table .week-number {
-            text-align: center;
-            font-weight: 700;
-            width: 80px;
-            font-size: 1rem;
-        }
-        
-        .rol-table .dates {
-            width: 140px;
-            white-space: nowrap;
-            font-weight: 600;
-        }
-        
-        .rol-table .activity {
-            width: 200px;
-            font-weight: 600;
-        }
-        
-        .rol-table .fis-column {
-            width: 160px;
-            text-align: center;
-            font-weight: 600;
-        }
-        
-        .rol-table .fis-header {
-            text-align: center;
-            font-weight: 700;
-        }
-        
-        .rol-table .vacation-row {
-            background-color: rgba(255, 51, 51, 0.3) !important;
-        }
-        
-        .rol-table .vacation-row td {
-            color: var(--matrix-error);
-            font-weight: 700;
-            text-align: center;
-            font-size: 1rem;
-        }
-        
-        .rol-legend {
-            margin-top: 20px;
-            padding: 20px;
-            background: rgba(13, 13, 13, 0.95);
-            border: 1px solid var(--matrix-green);
-            border-radius: 8px;
-        }
-        
-        .rol-legend h3 {
-            color: var(--matrix-green);
-            margin-bottom: 16px;
-            font-size: 1.1rem;
-            font-weight: 700;
-        }
-        
-        .rol-legend ul {
-            list-style: none;
-            padding: 0;
-        }
-        
-        .rol-legend li {
-            padding: 6px 0;
-            color: var(--matrix-green);
-            font-size: 0.95rem;
-            font-weight: 500;
-        }
-        
-        .rol-legend li strong {
-            color: var(--matrix-green);
-            font-weight: 700;
-        }
-        
-        /* Nota de Entrega de Reporte */
-        .entrega-nota {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            margin-top: 24px;
-            padding: 24px;
-            background: linear-gradient(135deg, rgba(0, 255, 65, 0.15), rgba(0, 59, 0, 0.3));
-            border: 2px solid var(--matrix-green);
-            border-radius: 12px;
-            box-shadow: 0 0 20px rgba(0, 255, 65, 0.4);
-        }
-        
-        .entrega-icon {
-            font-size: 4rem;
-            flex-shrink: 0;
-            filter: drop-shadow(0 0 10px var(--matrix-green));
-        }
-        
-        .entrega-content {
-            flex: 1;
-        }
-        
-        .entrega-content h4 {
-            color: var(--matrix-green);
-            font-size: 1.3rem;
-            font-weight: 700;
-            margin-bottom: 12px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 0 0 10px var(--matrix-green);
-        }
-        
-        .entrega-content p {
-            color: var(--matrix-green);
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 16px;
-        }
-        
-        .entrega-opciones {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-        
-        .entrega-opciones .opcion {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 20px;
-            background-color: var(--matrix-dark);
-            border: 1px solid var(--matrix-green);
-            border-radius: 8px;
-            color: var(--matrix-green);
-            font-weight: 700;
-            font-size: 1rem;
-            box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
-        }
-        
-        @media (max-width: 600px) {
-            .entrega-nota {
-                flex-direction: column;
-                text-align: center;
-                padding: 20px;
-            }
-            
-            .entrega-icon {
-                font-size: 3rem;
-            }
-            
-            .entrega-content h4 {
-                font-size: 1.1rem;
-            }
-            
-            .entrega-content p {
-                font-size: 1rem;
-            }
-            
-            .entrega-opciones {
-                justify-content: center;
-            }
-        }
-
-        /* Alta Form Styles */
-        .alta-card {
-            background-color: rgba(13, 13, 13, 0.95);
-            border: 2px solid var(--matrix-green);
-            border-radius: 8px;
-            padding: 30px;
+        .container {
             max-width: 600px;
             margin: 0 auto;
-            box-shadow: 0 0 10px var(--matrix-dim);
+            background: rgba(13, 13, 13, 0.95);
+            padding: 40px;
+            border-radius: 15px;
+            border: 2px solid #00FF41;
+            box-shadow: 0 0 20px #00FF41;
         }
 
-        .alta-card h2 {
+        h1 {
             text-align: center;
-            margin-bottom: 30px;
-            color: var(--matrix-green);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: 500;
-            margin-bottom: 8px;
-            color: var(--matrix-green);
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid var(--matrix-green);
-            border-radius: 4px;
-            font-size: 0.95rem;
-            font-family: inherit;
-            background-color: var(--matrix-bg);
-            color: var(--matrix-green);
-        }
-
-        .form-group input::placeholder {
-            color: var(--matrix-dark);
-        }
-
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: var(--matrix-green);
-            box-shadow: 0 0 10px var(--matrix-green);
-        }
-
-        .form-group input.error {
-            border-color: var(--matrix-error);
-            box-shadow: 0 0 10px var(--matrix-error);
-        }
-
-        .error-message {
-            color: var(--matrix-error);
-            font-size: 0.8rem;
-            margin-top: 4px;
-        }
-
-        .btn {
-            padding: 12px 24px;
-            border-radius: 4px;
-            font-size: 0.95rem;
-            font-weight: 500;
-            cursor: pointer;
-            font-family: inherit;
-            transition: all 0.3s;
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .btn-primary {
-            background-color: var(--matrix-green);
-            color: var(--matrix-bg);
-            border: 1px solid var(--matrix-green);
-            width: 100%;
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            box-shadow: 0 0 20px var(--matrix-green);
-        }
-
-        .btn-secondary {
-            background-color: transparent;
-            color: var(--matrix-green);
-            border: 1px solid var(--matrix-green);
-        }
-
-        .btn-secondary:hover:not(:disabled) {
-            background-color: var(--matrix-green);
-            color: var(--matrix-bg);
-        }
-
-        /* Downloads Section */
-        .downloads-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 24px;
-            margin-top: 20px;
-        }
-
-        .download-card {
-            background: rgba(13, 13, 13, 0.9);
-            border: 2px solid var(--matrix-green);
-            border-radius: 8px;
-            padding: 30px;
-            text-align: center;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-
-        .download-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 0 25px var(--matrix-green);
-            background: rgba(0, 255, 65, 0.05);
-        }
-
-        .download-card .icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            text-shadow: var(--matrix-glow);
-        }
-
-        .download-card h3 {
-            font-size: 1.1rem;
-            color: var(--matrix-green);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* Step Indicator */
-        .step-indicator {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 32px;
-            flex-wrap: wrap;
-        }
-
-        .step {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            border: 1px solid var(--matrix-dim);
-            border-radius: 4px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: var(--matrix-dim);
-        }
-
-        .step.active {
-            background-color: var(--matrix-green);
-            color: var(--matrix-bg);
-            border-color: var(--matrix-green);
-            box-shadow: 0 0 10px var(--matrix-green);
-        }
-
-        .step.completed {
-            background-color: var(--matrix-dark);
-            color: var(--matrix-green);
-            border-color: var(--matrix-green);
-        }
-
-        .step-number {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            font-weight: 600;
-            border: 1px solid var(--matrix-dim);
-        }
-
-        .step.active .step-number,
-        .step.completed .step-number {
-            background-color: currentColor;
-            color: var(--matrix-bg);
-            border-color: currentColor;
-        }
-
-        /* Calendar */
-        .calendar {
-            background-color: var(--matrix-bg);
-            border: 1px solid var(--matrix-dim);
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .calendar-header span {
-            font-weight: 600;
-            font-size: 1rem;
-            color: var(--matrix-green);
-        }
-
-        .calendar-nav {
-            background: none;
-            border: 1px solid var(--matrix-green);
-            color: var(--matrix-green);
-            cursor: pointer;
-            padding: 8px 12px;
-            border-radius: 4px;
-            font-size: 1.2rem;
-            font-family: inherit;
-        }
-
-        .calendar-nav:hover {
-            background-color: var(--matrix-green);
-            color: var(--matrix-bg);
-            box-shadow: 0 0 10px var(--matrix-green);
-        }
-
-        .calendar-weekdays {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
-            margin-bottom: 8px;
-            text-align: center;
-        }
-
-        .calendar-weekdays span {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--matrix-dim);
-            padding: 8px 0;
-        }
-
-        .calendar-days {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
-        }
-
-        .calendar-day {
-            aspect-ratio: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 4px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            border: 1px solid transparent;
-            color: var(--matrix-green);
-        }
-
-        .calendar-day:not(.disabled):hover {
-            background-color: var(--matrix-green);
-            color: var(--matrix-bg);
-            box-shadow: 0 0 10px var(--matrix-green);
-        }
-
-        .calendar-day.today {
-            font-weight: 600;
-            border-color: var(--matrix-green);
-            box-shadow: 0 0 5px var(--matrix-green);
-        }
-
-        .calendar-day.selected {
-            background-color: var(--matrix-green);
-            color: var(--matrix-bg);
-            box-shadow: 0 0 15px var(--matrix-green);
-        }
-
-        .calendar-day.disabled {
-            color: var(--matrix-dark);
-            cursor: not-allowed;
-        }
-
-        .calendar-day.weekend {
-            color: var(--matrix-dark);
-        }
-
-        /* Time Slots */
-        .time-slots {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-
-        .time-slot {
-            padding: 14px 12px;
-            border: 1px solid var(--matrix-green);
-            border-radius: 4px;
-            text-align: center;
-            cursor: pointer;
-            font-weight: 500;
-            font-size: 0.9rem;
-            background-color: var(--matrix-bg);
-            color: var(--matrix-green);
-            font-family: inherit;
-        }
-
-        .time-slot:hover {
-            background-color: var(--matrix-green);
-            color: var(--matrix-bg);
-            box-shadow: 0 0 15px var(--matrix-green);
-        }
-
-        .time-slot.occupied {
-            background-color: var(--matrix-dark);
-            border-color: var(--matrix-dim);
-            color: var(--matrix-dim);
-            cursor: not-allowed;
-            text-decoration: line-through;
-        }
-
-        .time-slot.selected {
-            background-color: var(--matrix-green);
-            color: var(--matrix-bg);
-            box-shadow: 0 0 15px var(--matrix-green);
-        }
-
-        .info-box {
-            background-color: var(--matrix-dark);
-            color: var(--matrix-green);
-            font-weight: 500;
-            margin-bottom: 16px;
-            padding: 8px 12px;
-            border-radius: 4px;
-            text-align: center;
-            border: 1px solid var(--matrix-dim);
-        }
-
-        .number-input {
-            display: flex;
-        }
-
-        .number-input input {
-            text-align: center;
-            border-radius: 0;
-            border-left: 1px solid var(--matrix-green);
-            border-right: 1px solid var(--matrix-green);
-        }
-
-        .number-btn {
-            width: 48px;
-            height: 48px;
-            border: 1px solid var(--matrix-green);
-            background-color: var(--matrix-bg);
-            font-size: 1.25rem;
-            font-weight: 600;
-            cursor: pointer;
-            color: var(--matrix-green);
-            font-family: inherit;
-        }
-
-        .number-btn:first-child {
-            border-radius: 4px 0 0 4px;
-        }
-
-        .number-btn:last-child {
-            border-radius: 0 4px 4px 0;
-        }
-
-        .number-btn:hover {
-            background-color: var(--matrix-green);
-            color: var(--matrix-bg);
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 12px;
-            margin-top: 24px;
+            color: #00FF41;
+            text-shadow: 0 0 10px #00FF41;
+            margin-bottom: 10px;
+            font-size: 2rem;
+            letter-spacing: 3px;
         }
 
         h2 {
-            color: var(--matrix-green);
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        #selectedDateDisplay,
-        #selectedDateSummary,
-        #step3Summary {
-            color: var(--matrix-dim) !important;
-            margin-bottom: 20px;
-            padding: 12px;
-            background: var(--matrix-bg);
-            border-radius: 4px;
-            border: 1px solid var(--matrix-dim);
-        }
-
-        #selectedDateDisplay strong,
-        #selectedDateSummary strong,
-        #step3Summary strong {
-            color: var(--matrix-green);
-        }
-
-        /* Modal */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        .modal {
-            background-color: var(--matrix-black);
-            border: 2px solid var(--matrix-green);
-            border-radius: 8px;
-            padding: 40px;
-            max-width: 450px;
-            width: 90%;
             text-align: center;
-            box-shadow: var(--matrix-glow);
+            color: #008F11;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
         }
 
-        .modal-icon {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 24px;
-            color: var(--matrix-green);
+        .datetime {
+            text-align: center;
+            color: #008F11;
+            margin-bottom: 30px;
+            padding: 10px;
+            border: 1px solid #008F11;
+            border-radius: 4px;
         }
 
-        .modal h2 {
-            font-size: 1.5rem;
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        label {
+            color: #00FF41;
+            font-weight: bold;
             margin-bottom: 8px;
-            color: var(--matrix-green);
-            text-shadow: 0 0 10px var(--matrix-green);
+            display: block;
+            letter-spacing: 1px;
         }
 
-        .modal p {
-            color: var(--matrix-dim);
-            margin-bottom: 24px;
+        input, select {
+            width: 100%;
+            padding: 14px;
+            background: #0D0D0D;
+            border: 2px solid #00FF41;
+            border-radius: 6px;
+            color: #00FF41;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
         }
 
-        .confirmation-code {
-            background-color: var(--matrix-dark);
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 24px;
-            border: 1px solid var(--matrix-green);
+        input:focus, select:focus {
+            outline: none;
+            box-shadow: 0 0 15px #00FF41;
         }
 
-        .confirmation-code .label {
+        button {
+            background: #00FF41;
+            color: #000000;
+            padding: 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            letter-spacing: 2px;
+            font-family: 'Courier New', monospace;
+        }
+
+        button:hover {
+            box-shadow: 0 0 25px #00FF41;
+        }
+
+        #reservas {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #00FF41;
+        }
+
+        h3 {
+            color: #00FF41;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #00FF41;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        li {
+            background: rgba(0, 59, 0, 0.5);
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            border: 2px solid #00FF41;
+        }
+
+        li:hover {
+            background: rgba(0, 255, 65, 0.2);
+        }
+
+        .btn-delete {
+            float: right;
+            background: #FF3333;
+            color: white;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
             font-size: 0.85rem;
-            color: var(--matrix-dim);
-            margin-bottom: 8px;
-        }
-
-        .confirmation-code .code {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--matrix-green);
-            letter-spacing: 3px;
-            text-shadow: 0 0 10px var(--matrix-green);
-        }
-
-        .spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--matrix-bg);
-            border-radius: 50%;
-            border-top-color: var(--matrix-bg);
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .toast-container {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            z-index: 1001;
-        }
-
-        .toast {
-            background-color: var(--matrix-black);
-            padding: 16px 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 15px var(--matrix-dim);
-            margin-top: 12px;
-            border-left: 4px solid var(--matrix-green);
-            color: var(--matrix-green);
-        }
-
-        .toast.error {
-            border-left-color: var(--matrix-error);
-            color: var(--matrix-error);
-        }
-
-        @media (max-width: 600px) {
-            .header h1 {
-                font-size: 1.2rem;
-            }
-            
-            .menu-card {
-                padding: 30px 20px;
-            }
-            
-            .menu-card h2 {
-                font-size: 1.1rem;
-            }
-            
-            .booking-card {
-                padding: 16px;
-            }
-
-            .btn-group {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-            }
-
-            .time-slots {
-                grid-template-columns: repeat(3, 1fr);
-            }
         }
     </style>
-<style>.ours-select{position:relative}.ours-select .selection-item{display:block;cursor:pointer;width:100%;height:36px;line-height:36px;box-sizing:border-box;padding:0 32px 0 10px;position:relati[...]
+</head>
 <body>
-    <canvas id="matrix-canvas" width="1366" height="607"></canvas>
+    <canvas id="matrix-canvas"></canvas>
     
-    <div class="app-container">
-        <header class="header">
-            <img src="logo.png" alt="Logo" class="header-logo">
-            <h1>Laboratorio de Física</h1>
-            <p class="subtitle">Facultad de Ciencias - UASLP</p>
-            <p class="professor">Prof. Juan Guillermo Téllez Villalobos</p>
-            <div id="currentDateTime" class="header-datetime">MIÉRCOLES, 22 DE ENERO DE 2026, 20:27:02</div>
-        </header>
-
-        <!-- SECCIÓN 1: MENÚ PRINCIPAL -->
-        <div id="section-landing" class="section active">
-            <div class="landing-menu">
-                <!-- MOVIDO: DARTE DE ALTA VA PRIMERO -->
-                <div class="menu-card" onclick="showSection(&#39;alta&#39;)">
-                    <div class="icon">📝</div>
-                    <h2>Darte de Alta en el Sistema</h2>
-                    <p>Registro solo una vez al inicio del semestre</p>
-                </div>
-
-                <div class="menu-card" onclick="showSection(&#39;reservation&#39;)">
-                    <div class="icon">📅</div>
-                    <h2>Reservaciones</h2>
-                    <p>Reserva equipos y horarios del laboratorio</p>
-                </div>
-
-                <div class="menu-card" onclick="showSection(&#39;downloads&#39;)">
-                    <div class="icon">📥</div>
-                    <h2>Prácticas</h2>
-                    <p>Descarga guías de prácticas</p>
-                </div>
-
-                <div class="menu-card" onclick="showSection(&#39;rol&#39;)">
-                    <div class="icon">📋</div>
-                    <h2>Rol de Prácticas</h2>
-                    <p>Calendario del semestre</p>
-                </div>
-
-                <div class="menu-card" onclick="showSection(&#39;bitacora&#39;)">
-                    <div class="icon">📄</div>
-                    <h2>Características del Reporte/Bitácora</h2>
-                    <p>Partes de la bitácora de laboratorio</p>
-                </div>
+    <div class="container">
+        <h1>🔬 LABORATORIO DE FÍSICA</h1>
+        <h2>SISTEMA DE RESERVAS - UASLP</h2>
+        <div class="datetime" id="currentDateTime"></div>
+        
+        <form id="reservaForm">
+            <div>
+                <label>NOMBRE COMPLETO:</label>
+                <input type="text" id="nombre" required>
             </div>
+            
+            <div>
+                <label>FECHA:</label>
+                <input type="date" id="fecha" required>
+            </div>
+            
+            <div>
+                <label>HORA:</label>
+                <input type="time" id="hora" required>
+            </div>
+            
+            <div>
+                <label>TIPO DE EXPERIMENTO:</label>
+                <select id="experimento" required>
+                    <option value="">SELECCIONE...</option>
+                    <option value="mecanica">Mecánica</option>
+                    <option value="electromagnetismo">Electromagnetismo</option>
+                    <option value="optica">Óptica</option>
+                    <option value="termodinamica">Termodinámica</option>
+                </select>
+            </div>
+            
+            <button type="submit">RESERVAR</button>
+        </form>
+        
+        <div id="reservas">
+            <h3>RESERVAS ACTIVAS</h3>
+            <ul id="listaReservas"></ul>
         </div>
+    </div>
 
-        <!-- SECCIÓN 2: RESERVACIONES -->
-        <div id="section-reservation" class="section">
-            <div class="nav-back">
-                <button class="btn-back" onclick="showSection(&#39;landing&#39;)">← VOLVER AL MENÚ</button>
-            </div>
-            <div class="booking-card">
-                <div class="step-indicator">
-                    <div class="step active" id="step1Indicator">
-                        <span class="step-number">1</span>
-                        FECHA
-                    </div>
-                    <!-- restante del archivo sin cambios -->
-                </div>
-[...]
+    <script>
+        // Matrix Rain
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const matrix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*";
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+        const drops = [];
+        for (let x = 0; x < columns; x++) drops[x] = 1;
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.04)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#00FF41';
+            ctx.font = fontSize + 'px monospace';
+            
+            for (let i = 0; i < drops.length; i++) {
+                const text = matrix.charAt(Math.floor(Math.random() * matrix.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 35);
+
+        // DateTime
+        function updateDateTime() {
+            const now = new Date();
+            document.getElementById('currentDateTime').textContent = 
+                now.toLocaleDateString('es-MX', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit'}).toUpperCase();
+        }
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+
+        // Reservations
+        let reservas = JSON.parse(localStorage.getItem('reservas')) || [];
+        const form = document.getElementById('reservaForm');
+        const listaReservas = document.getElementById('listaReservas');
+
+        function mostrarReservas() {
+            listaReservas.innerHTML = '';
+            if (reservas.length === 0) {
+                listaReservas.innerHTML = '<li>NO HAY RESERVAS AÚN</li>';
+                return;
+            }
+            reservas.forEach(r => {
+                const li = document.createElement('li');
+                li.innerHTML = `<strong>▸ ${r.nombre}</strong><br>📅 ${r.fecha} ⏰ ${r.hora}<br>🔬 ${r.experimento}<button class="btn-delete" onclick="eliminar(${r.id})">ELIMINAR</button>`;
+                listaReservas.appendChild(li);
+            });
+        }
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            reservas.push({
+                id: Date.now(),
+                nombre: document.getElementById('nombre').value,
+                fecha: document.getElementById('fecha').value,
+                hora: document.getElementById('hora').value,
+                experimento: document.getElementById('experimento').value
+            });
+            localStorage.setItem('reservas', JSON.stringify(reservas));
+            form.reset();
+            mostrarReservas();
+            alert('¡RESERVA REALIZADA!');
+        });
+
+        function eliminar(id) {
+            if (confirm('¿ELIMINAR RESERVA?')) {
+                reservas = reservas.filter(r => r.id !== id);
+                localStorage.setItem('reservas', JSON.stringify(reservas));
+                mostrarReservas();
+            }
+        }
+
+        mostrarReservas();
+    </script>
+</body>
+</html>
