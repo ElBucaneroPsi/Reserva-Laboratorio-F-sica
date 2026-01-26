@@ -4,85 +4,176 @@
     box-sizing: border-box;
 }
 
+:root {
+    --matrix-green: #00FF41;
+    --matrix-dark: #003B00;
+    --matrix-black: #0D0D0D;
+    --matrix-bg: #000000;
+    --matrix-dim: #008F11;
+    --matrix-glow: 0 0 10px #00FF41, 0 0 20px #00FF41;
+    --matrix-error: #FF3333;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: 'Courier New', monospace;
+    background-color: var(--matrix-bg);
+    color: var(--matrix-green);
     min-height: 100vh;
+    overflow-x: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 20px;
 }
 
-.container {
-    background: white;
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    max-width: 500px;
+/* Matrix Rain Canvas */
+#matrix-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
 }
 
-h1 {
-    color: #667eea;
+.container {
+    background: rgba(13, 13, 13, 0.95);
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: var(--matrix-glow);
+    max-width: 600px;
+    width: 100%;
+    border: 2px solid var(--matrix-green);
+}
+
+.header {
     text-align: center;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--matrix-green);
+}
+
+.header h1 {
+    color: var(--matrix-green);
+    font-size: 2rem;
+    text-shadow: var(--matrix-glow);
     margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    animation: glow 2s ease-in-out infinite alternate;
 }
 
-h2 {
+@keyframes glow {
+    from {
+        text-shadow: 0 0 10px #00FF41, 0 0 20px #00FF41;
+    }
+    to {
+        text-shadow: 0 0 20px #00FF41, 0 0 30px #00FF41, 0 0 40px #00FF41;
+    }
+}
+
+.header h2 {
     text-align: center;
-    color: #555;
-    margin-bottom: 30px;
-    font-size: 1.2em;
+    color: var(--matrix-dim);
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    letter-spacing: 2px;
+}
+
+.header-datetime {
+    font-size: 0.9rem;
+    color: var(--matrix-dim);
+    margin-top: 15px;
+    padding: 10px 20px;
+    border: 1px solid var(--matrix-dim);
+    border-radius: 4px;
+    display: inline-block;
+    background: rgba(0, 59, 0, 0.3);
 }
 
 form {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 20px;
 }
 
-label {
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
     font-weight: bold;
-    color: #333;
+    color: var(--matrix-green);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.9rem;
 }
 
-input, select {
-    padding: 10px;
-    border: 2px solid #ddd;
-    border-radius: 5px;
-    font-size: 1em;
+.form-group input,
+.form-group select {
+    padding: 14px;
+    border: 2px solid var(--matrix-green);
+    border-radius: 6px;
+    font-size: 1rem;
+    font-family: 'Courier New', monospace;
+    background-color: var(--matrix-black);
+    color: var(--matrix-green);
+    transition: all 0.3s;
 }
 
-input:focus, select:focus {
+.form-group input::placeholder {
+    color: var(--matrix-dark);
+}
+
+.form-group input:focus,
+.form-group select:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: var(--matrix-green);
+    box-shadow: 0 0 15px var(--matrix-green);
+    background-color: rgba(0, 255, 65, 0.05);
 }
 
-button {
-    background: #667eea;
-    color: white;
-    padding: 12px;
-    border: none;
-    border-radius: 5px;
-    font-size: 1.1em;
+.btn-primary {
+    background: var(--matrix-green);
+    color: var(--matrix-black);
+    padding: 16px;
+    border: 2px solid var(--matrix-green);
+    border-radius: 6px;
+    font-size: 1.1rem;
+    font-weight: bold;
     cursor: pointer;
-    transition: background 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-family: 'Courier New', monospace;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
 }
 
-button:hover {
-    background: #764ba2;
+.btn-primary:hover {
+    box-shadow: 0 0 25px var(--matrix-green);
+    transform: translateY(-2px);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
 }
 
 #reservas {
-    margin-top: 30px;
-    padding-top: 20px;
-    border-top: 2px solid #eee;
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 2px solid var(--matrix-green);
 }
 
 h3 {
-    color: #667eea;
-    margin-bottom: 15px;
+    color: var(--matrix-green);
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px var(--matrix-green);
 }
 
 #listaReservas {
@@ -90,9 +181,97 @@ h3 {
 }
 
 #listaReservas li {
-    background: #f8f9fa;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    border-left: 4px solid #667eea;
+    background: rgba(0, 59, 0, 0.5);
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    border-left: 4px solid var(--matrix-green);
+    border: 2px solid var(--matrix-green);
+    transition: all 0.3s;
+    position: relative;
+}
+
+#listaReservas li:hover {
+    background: rgba(0, 255, 65, 0.2);
+    box-shadow: 0 0 15px rgba(0, 255, 65, 0.5);
+    transform: translateX(5px);
+}
+
+#listaReservas li strong {
+    color: var(--matrix-green);
+    font-size: 1.1rem;
+    text-shadow: 0 0 5px var(--matrix-green);
+}
+
+.btn-delete {
+    float: right;
+    background: var(--matrix-error);
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.btn-delete:hover {
+    box-shadow: 0 0 15px var(--matrix-error);
+    transform: scale(1.05);
+}
+
+/* Toast Notifications */
+.toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 1001;
+}
+
+.toast {
+    background-color: var(--matrix-black);
+    padding: 16px 24px;
+    border-radius: 8px;
+    box-shadow: 0 0 20px var(--matrix-green);
+    margin-top: 12px;
+    border: 2px solid var(--matrix-green);
+    color: var(--matrix-green);
+    font-weight: bold;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.toast.error {
+    border-color: var(--matrix-error);
+    color: var(--matrix-error);
+    box-shadow: 0 0 20px var(--matrix-error);
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 25px;
+    }
+    
+    .header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .header h2 {
+        font-size: 0.95rem;
+    }
+    
+    .btn-primary {
+        font-size: 1rem;
+    }
 }
