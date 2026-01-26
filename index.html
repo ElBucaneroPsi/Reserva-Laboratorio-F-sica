@@ -1946,13 +1946,13 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
             var GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx2uwOtzYxcn8gIBcH-FcEuR1NCVxcwS3WKOHGhj2hs1df62MsyiuWorn5Jf8DvqfjBKQ/exec';
             
             fetch(GOOGLE_SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: {
-                    'Content-Type': 'text/plain;charset=utf-8'
-                },
-                body: JSON.stringify(reservationData)
-            });
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {
+        'Content-Type': 'text/plain'
+    },
+    body: JSON.stringify(altaData)
+})
 
             setTimeout(function() {
                 submitBooking.disabled = false;
