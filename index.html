@@ -1915,53 +1915,55 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
         }
 
         function submitReservation() {
-            if (!validateForm()) {
-                showToast('COMPLETA TODOS LOS CAMPOS OBLIGATORIOS', 'error');
-                return;
-            }
+    if (!validateForm()) {
+        showToast('COMPLETA TODOS LOS CAMPOS OBLIGATORIOS', 'error');
+        return;
+    }
 
-            submitBooking.disabled = true;
-            submitBooking.innerHTML = '<span class="spinner"></span> GUARDANDO...';
-            
-            var grupoSelect = document.getElementById('grupo');
-            var selectedGrupo = grupoSelect.options[grupoSelect.selectedIndex];
-            var grupoData = selectedGrupo.text.split(' | ');
-            
-            var reservationData = {
-                action: 'reservation',
-                date: selectedDate,
-                time: selectedTime,
-                dayOfWeek: new Date(selectedDate + 'T00:00:00').toLocaleDateString('es-ES', { weekday: 'long' }),
-                teamName: document.getElementById('teamName').value.trim(),
-                subject: document.getElementById('subject').value,
-                profesor: grupoData[0] || '',
-                horario: grupoData[1] || '',
-                grupo: grupoData[2] || '',
-                studentCount: parseInt(studentCountInput.value),
-                representativeName: document.getElementById('representativeName').value.trim(),
-                email: document.getElementById('email').value.trim(),
-                notes: document.getElementById('notes').value.trim()
-            };
+    submitBooking.disabled = true;
+    submitBooking.innerHTML = '<span class="spinner"></span> GUARDANDO...';
+    
+    var grupoSelect = document.getElementById('grupo');
+    var selectedGrupo = grupoSelect.options[grupoSelect.selectedIndex];
+    var grupoData = selectedGrupo.text.split(' | ');
+    
+    var reservationData = {
+        action: 'reservation',
+        date: selectedDate,
+        time: selectedTime,
+        dayOfWeek: new Date(selectedDate + 'T00:00:00').toLocaleDateString('es-ES', { weekday: 'long' }),
+        teamName: document.getElementById('teamName').value.trim(),
+        subject: document.getElementById('subject').value,
+        profesor: grupoData[0] || '',
+        horario: grupoData[1] || '',
+        grupo: grupoData[2] || '',
+        studentCount: parseInt(studentCountInput.value),
+        representativeName: document.getElementById('representativeName').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        notes: document.getElementById('notes').value.trim()
+    };
 
-            var GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxFdF9Usf0DYpU5DEMkJ1YWi0kReoen-RuKV-PnJWDg2rTCFlxvfkJzxYWC2pEfs1PSvw/exec';
-            
-            fetch(GOOGLE_SCRIPT_URL, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: {
-        'Content-Type': 'text/plain'  //aqui cambio lo regreso a puro text plain si no funciona
-    },
-    body: JSON.stringify(altaData)
-})
-
-            setTimeout(function() {
-                submitBooking.disabled = false;
-                submitBooking.innerHTML = 'CONFIRMAR RESERVA';
-                var localCode = 'LC' + Math.random().toString(36).substr(2, 6).toUpperCase();
-                showSuccess('RESERVA CONFIRMADA', 'Tu reserva ha sido guardada exitosamente.', localCode);
-            }, 3000);
-        }
-
+    fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+            'Content-Type': 'text/plain'
+        },
+        body: JSON.stringify(reservationData)
+    })
+    .then(function() {
+        submitBooking.disabled = false;
+        submitBooking.innerHTML = 'CONFIRMAR RESERVA';
+        var localCode = 'LC' + Math.random().toString(36).substr(2, 6).toUpperCase();
+        showSuccess('RESERVA CONFIRMADA', 'Tu reserva ha sido guardada exitosamente.', localCode);
+    })
+    .catch(function(error) {
+        console.error('Error:', error);
+        submitBooking.disabled = false;
+        submitBooking.innerHTML = 'CONFIRMAR RESERVA';
+        showToast('ERROR AL REGISTRAR. INTENTA DE NUEVO.', 'error');
+    });
+}
        function submitAlta() {
     var isValid = true;
     var name = document.getElementById('altaName').value.trim();
