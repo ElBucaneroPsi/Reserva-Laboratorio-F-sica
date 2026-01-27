@@ -1724,19 +1724,21 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
                 var selectedDateObj = new Date(selectedDate + 'T00:00:00');
                 var dayOfWeek = selectedDateObj.getDay();
                 
-                if (dayOfWeek === 1 || dayOfWeek === 3) {
-                    startHour = 9;
-                    endHour = 18;
-                    dayLabel = 'LUNES Y MIÉRCOLES: 9:00 - 18:00';
-                } else if (dayOfWeek === 2 || dayOfWeek === 4) {
-                    startHour = 14;
-                    endHour = 18;
-                    dayLabel = 'MARTES Y JUEVES: 14:00 - 18:00';
-                } else if (dayOfWeek === 5) {
-                    startHour = 11;
-                    endHour = 15;
-                    dayLabel = 'VIERNES: 11:00 - 15:00';
-                }
+               var dayNames = ['DOMINGO', 'LUNES', 'MARTES', 'MIÉRCOLES', 'JUEVES', 'VIERNES', 'SÁBADO'];
+
+if (dayOfWeek === 1 || dayOfWeek === 3) {
+    startHour = 9;
+    endHour = 18;
+    dayLabel = dayNames[dayOfWeek] + ': 9:00 - 18:00';
+} else if (dayOfWeek === 2 || dayOfWeek === 4) {
+    startHour = 14;
+    endHour = 18;
+    dayLabel = dayNames[dayOfWeek] + ': 14:00 - 18:00';
+} else if (dayOfWeek === 5) {
+    startHour = 11;
+    endHour = 15;
+    dayLabel = 'VIERNES: 11:00 - 15:00';
+}
             }
             
             if (dayLabel) {
