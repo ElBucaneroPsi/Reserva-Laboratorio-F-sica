@@ -1419,7 +1419,7 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
 
     <script>
         // URL de tu Google Apps Script
-        var GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzNhJU_irGTng4o0YBb-YIqMfhzM_0lq00xORZknogvcXtowUsfUX9G4VJa9gksdtqekg/exec';
+        var GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxn9Ht_t0tQNfAeiUh3UGVDxyYvRcN0Kg7RRnXwUKPIVdIlPmNRTVi6IY9bpkshp3s2Mw/exec';
 
         // Variables globales
         var currentStep = 1;
@@ -1914,98 +1914,130 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
             return isValid;
         }
 
-        async function submitReservation() {
-    if (!validateForm()) {
+        function submitReservation() {
+            if (!validateForm()) {
+                showToast('COMPLETA TODOS LOS CAMPOS OBLIGATORIOS', 'error');
+                return;
+            }
+
+            submitBooking.disabled = true;
+            submitBooking.innerHTML = '<span class="spinner"></span> GUARDANDO...';
+            
+            var grupoSelect = document.getElementById('grupo');
+            var selectedGrupo = grupoSelect.options[grupoSelect.selectedIndex];
+            var grupoData = selectedGrupo.text.split(' | ');
+            
+            var reservationData = {
+                action: 'reservation',
+                date: selectedDate,
+                time: selectedTime,
+                dayOfWeek: new Date(selectedDate + 'T00:00:00').toLocaleDateString('es-ES', { weekday: 'long' }),
+                teamName: document.getElementById('teamName').value.trim(),
+                subject: document.getElementById('subject').value,
+                profesor: grupoData[0] || '',
+                horario: grupoData[1] || '',
+                grupo: grupoData[2] || '',
+                studentCount: parseInt(studentCountInput.value),
+                representativeName: document.getElementById('representativeName').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                notes: document.getElementById('notes').value.trim()
+            };
+
+            var GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx2uwOtzYxcn8gIBcH-FcEuR1NCVxcwS3WKOHGhj2hs1df62MsyiuWorn5Jf8DvqfjBKQ/exec';
+            
+            fetch(GOOGLE_SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {
+        'Content-Type': 'application/json'  //aqui cambio lo regreso a puro text plain si no funciona
+    },
+    body: JSON.stringify(altaData)
+})
+
+            setTimeout(function() {
+                submitBooking.disabled = false;
+                submitBooking.innerHTML = 'CONFIRMAR RESERVA';
+                var localCode = 'LC' + Math.random().toString(36).substr(2, 6).toUpperCase();
+                showSuccess('RESERVA CONFIRMADA', 'Tu reserva ha sido guardada exitosamente.', localCode);
+            }, 3000);
+        }
+
+       function submitAlta() {
+    var isValid = true;
+    var name = document.getElementById('altaName').value.trim();
+    var professor = document.getElementById('altaProfessor').value;
+    
+    // Validar nombre
+    if (!name) {
+        document.getElementById('altaName').classList.add('error');
+        document.getElementById('altaNameError').textContent = 'OBLIGATORIO';
+        isValid = false;
+    } else {
+        document.getElementById('altaName').classList.remove('error');
+        document.getElementById('altaNameError').textContent = '';
+    }
+    
+    // Validar profesor seleccionado
+    if (!professor) {
+        document.getElementById('altaProfessor').classList.add('error');
+        document.getElementById('altaProfessorError').textContent = 'SELECCIONA UN PROFESOR';
+        isValid = false;
+    } else {
+        document.getElementById('altaProfessor').classList.remove('error');
+        document.getElementById('altaProfessorError').textContent = '';
+    }
+    
+    if (!isValid) {
         showToast('COMPLETA TODOS LOS CAMPOS OBLIGATORIOS', 'error');
         return;
     }
 
-    var submitBtn = document.getElementById('submitBooking');
-    var originalText = submitBtn.innerHTML;
+    var submitBtn = document.getElementById('submitAlta');
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<span class="spinner"></span> GUARDANDO...';
     
-    var grupoSelect = document.getElementById('grupo');
-    var selectedGrupo = grupoSelect.options[grupoSelect.selectedIndex];
-    var grupoData = selectedGrupo.text.split(' | ');
+    // Parsear la información del profesor
+    var profParts = professor.split(' - ');
+    var profName = profParts[0] || '';
+    var profSchedule = profParts[1] || '';
+    var profAula = profParts[2] || '';
     
-    var reservationData = {
-        action: 'reservation',
-        date: selectedDate,
-        time: selectedTime,
-        dayOfWeek: new Date(selectedDate + 'T00:00:00').toLocaleDateString('es-ES', { weekday: 'long' }),
-        teamName: document.getElementById('teamName').value.trim(),
-        subject: document.getElementById('subject').value,
-        profesor: grupoData[0] || '',
-        horario: grupoData[1] || '',
-        grupo: grupoData[2] || '',
-        studentCount: parseInt(studentCountInput.value),
-        representativeName: document.getElementById('representativeName').value.trim(),
-        email: document.getElementById('email').value.trim(),
-        notes: document.getElementById('notes').value.trim(),
-        timestamp: new Date().toISOString()
+    console.log('Datos a enviar:', {
+        nombre: name,
+        profesor: profName,
+        horario: profSchedule,
+        aula: profAula
+    });
+    
+    var altaData = {
+        action: 'register',
+        nombre: name,
+        profesor: profName,
+        horario: profSchedule,
+        aula: profAula
     };
 
-    console.log('📤 Enviando reserva:', reservationData);
-
-    try {
-        console.log('🔄 Enviando a:', GOOGLE_SCRIPT_URL);
-        console.log('📦 Payload:', reservationData);
-        
-        const response = await fetch(GOOGLE_SCRIPT_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(reservationData)
-        });
-        
-        console.log('✅ Respuesta recibida. Status:', response.status);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-        
-        const result = await response.json();
-        console.log('📄 Contenido JSON:', result);
-        
-        if (result.success) {
-            // ÉXITO
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = originalText;
-            
-            const localCode = 'RES' + Math.random().toString(36).substr(2, 6).toUpperCase();
-            showSuccess('✅ RESERVA CONFIRMADA', 
-                       'Tu reserva ha sido guardada exitosamente.', 
-                       localCode);
-            
-            console.log('🎉 Reserva exitosa:', result);
-        } else {
-            throw new Error(result.error || 'Error desconocido del servidor');
-        }
-        
-    } catch (error) {
-        console.error('❌ Error en reserva:', error);
+    fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(altaData)
+    })
+    .then(function() {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = originalText;
-        
-        let errorMsg = 'ERROR AL RESERVAR';
-        if (error.message.includes('Failed to fetch')) {
-            errorMsg = '❌ ERROR DE CONEXIÓN. Verifica tu internet.';
-        } else if (error.message.includes('HTTP')) {
-            errorMsg = '❌ ERROR DEL SERVIDOR: ' + error.message;
-        } else {
-            errorMsg = '❌ ERROR: ' + error.message;
-        }
-        
-        showToast(errorMsg, 'error');
-        
-        console.error('🔍 Detalles del error:', {
-            mensaje: error.message,
-            stack: error.stack,
-            datos: reservationData
-        });
-    }
+        submitBtn.innerHTML = 'REGISTRAR ALTA';
+        document.getElementById('altaForm').reset();
+        document.getElementById('altaInfo').value = '';
+        showSuccess('REGISTRO EXITOSO', 'Tu alta ha sido guardada correctamente.', 'ALT' + Math.random().toString(36).substr(2, 6).toUpperCase());
+    })
+    .catch(function(error) {
+        console.error('Error:', error);
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'REGISTRAR ALTA';
+        showToast('ERROR AL REGISTRAR. INTENTA DE NUEVO.', 'error');
+    });
 }
         function showSuccess(title, message, code) {
             document.getElementById('modalTitle').textContent = title;
@@ -2200,3 +2232,4 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
 </body>
 </html>
   <div class="minimax-ball-content">
+
