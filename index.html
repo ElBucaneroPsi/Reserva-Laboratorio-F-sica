@@ -1726,17 +1726,25 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
                 
                var dayNames = ['DOMINGO', 'LUNES', 'MARTES', 'MIÉRCOLES', 'JUEVES', 'VIERNES', 'SÁBADO'];
 
-if (dayOfWeek === 1 || dayOfWeek === 3) {
+if (dayOfWeek === 1) {  // LUNES
     startHour = 9;
-    endHour = 18;
-    dayLabel = dayNames[dayOfWeek] + ': 9:00 - 18:00';
-} else if (dayOfWeek === 2 || dayOfWeek === 4) {
+    endHour = 19;
+    dayLabel = 'LUNES: 9:00 - 18:00';
+} else if (dayOfWeek === 3) {  // MIÉRCOLES
+    startHour = 9;
+    endHour = 19;  // ← CAMBIADO A 19 para incluir 6 PM
+    dayLabel = 'MIÉRCOLES: 9:00 - 18:00';
+} else if (dayOfWeek === 2) {  // MARTES
     startHour = 14;
-    endHour = 18;
-    dayLabel = dayNames[dayOfWeek] + ': 14:00 - 18:00';
-} else if (dayOfWeek === 5) {
+    endHour = 19;  // ← CAMBIADO A 19 para incluir 6 PM
+    dayLabel = 'MARTES: 14:00 - 18:00';
+} else if (dayOfWeek === 4) {  // JUEVES
+    startHour = 14;
+    endHour = 19;  // ← CAMBIADO A 19 para incluir 6 PM
+    dayLabel = 'JUEVES: 14:00 - 18:00';
+} else if (dayOfWeek === 5) {  // VIERNES
     startHour = 11;
-    endHour = 15;
+    endHour = 16;  // ← CAMBIADO A 16 para incluir 3 PM
     dayLabel = 'VIERNES: 11:00 - 15:00';
 }
             }
