@@ -1704,22 +1704,91 @@ weekRestrictions: {
         }
 
         function selectDate(dateStr, element) {
-            var days = calendarDays.querySelectorAll('.calendar-day');
-            for (var i = 0; i < days.length; i++) {
-                days[i].classList.remove('selected');
-            }
-            element.classList.add('selected');
+    var days = calendarDays.querySelectorAll('.calendar-day');
+    for (var i = 0; i < days.length; i++) {
+        days[i].classList.remove('selected');
+    }
+    element.classList.add('selected');
 
-            selectedDate = dateStr;
-            document.getElementById('selectedDateText').textContent = formatDateLong(dateStr);
-            step1Next.disabled = false;
+    selectedDate = dateStr;
+    document.getElementById('selectedDateText').textContent = formatDateLong(dateStr);
+    step1Next.disabled = false;
 
-            selectedTime = null;
-            step2Next.disabled = true;
+    selectedTime = null;
+    step2Next.disabled = true;
 
-            renderTimeSlots();
-        }
+    // ACTUALIZAR MATERIAS SEGÚN LA FECHA
+    actualizarMateriasSegunFecha();
+    
+    renderTimeSlots();
+}
 
+// NUEVA FUNCIÓN: Actualiza las opciones de materia según la fecha seleccionada
+function actualizarMateriasSegunFecha() {
+    var subjectSelect = document.getElementById('subject');
+    
+    if (!selectedDate) {
+        return;
+    }
+    
+    // Guardar la materia seleccionada actualmente
+    var materiaActual = subjectSelect.value;
+    
+    // Limpiar el dropdown
+    subjectSelect.innerHTML = '<option value="">SELECCIONAR MATERIA</option>';
+    
+    var selectedDateObj = new Date(selectedDate + 'T00:00:00');
+    var week1Start = new Date('2026-02-03T00:00:00');
+    var week1End = new Date('2026-02-06T23:59:59');
+    var week2Start = new Date('2026-02-09T00:00:00');
+    var week2End = new Date('2026-02-13T23:59:59');
+    
+    // Verificar en qué semana está la fecha seleccionada
+    if (selectedDateObj >= week1Start && selectedDateObj <= week1End) {
+        // SEMANA 1 (3-6 febrero): Solo estas dos materias
+        var option1 = document.createElement('option');
+        option1.value = 'Estática y dinámica';
+        option1.textContent = 'ESTÁTICA Y DINÁMICA';
+        subjectSelect.appendChild(option1);
+        
+        var option2 = document.createElement('option');
+        option2.value = 'Electricidad y Magnetismo';
+        option2.textContent = 'ELECTRICIDAD Y MAGNETISMO';
+        subjectSelect.appendChild(option2);
+        
+    } else if (selectedDateObj >= week2Start && selectedDateObj <= week2End) {
+        // SEMANA 2 (9-13 febrero): Solo Ondas y Termodinámica
+        var option3 = document.createElement('option');
+        option3.value = 'Ondas y Termodinámica';
+        option3.textContent = 'ONDAS Y TERMODINÁMICA';
+        subjectSelect.appendChild(option3);
+    } else {
+        // Para otras fechas, mostrar todas
+        var option1 = document.createElement('option');
+        option1.value = 'Estática y dinámica';
+        option1.textContent = 'ESTÁTICA Y DINÁMICA';
+        subjectSelect.appendChild(option1);
+        
+        var option2 = document.createElement('option');
+        option2.value = 'Electricidad y Magnetismo';
+        option2.textContent = 'ELECTRICIDAD Y MAGNETISMO';
+        subjectSelect.appendChild(option2);
+        
+        var option3 = document.createElement('option');
+        option3.value = 'Ondas y Termodinámica';
+        option3.textContent = 'ONDAS Y TERMODINÁMICA';
+        subjectSelect.appendChild(option3);
+    }
+    
+    // Restaurar la selección anterior si es posible
+    if (materiaActual) {
+        subjectSelect.value = materiaActual;
+    }
+    
+    // Actualizar los grupos
+    updateGrupos();
+}
+        
         function renderTimeSlots() {
             timeSlotsContainer.innerHTML = '';
             
@@ -1850,15 +1919,17 @@ if (dayOfWeek === 1) {  // LUNES
         }
 
         function goToStep(step) {
-            document.getElementById('step' + currentStep).style.display = 'none';
-            document.getElementById('step' + step).style.display = 'block';
-            currentStep = step;
-            updateStepIndicators();
+    document.getElementById('step' + currentStep).style.display = 'none';
+    document.getElementById('step' + step).style.display = 'block';
+    currentStep = step;
+    updateStepIndicators();
 
-            if (step === 3) {
-                initializeStep3();
-            }
-        }
+    if (step === 3) {
+        initializeStep3();
+        // ACTUALIZAR MATERIAS SEGÚN LA FECHA
+        actualizarMateriasSegunFecha();
+    }
+}
 
         function updateStepIndicators() {
             for (var i = 1; i <= 3; i++) {
