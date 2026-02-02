@@ -1069,10 +1069,10 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
                         </div>
 
                         <div class="form-group">
-                            <label for="studentCount">Número de Integrantes (1-6) *</label>
+                            <label for="studentCount">Número de Integrantes (4-6) *</label>
                             <div class="number-input">
                                 <button type="button" class="number-btn" id="decreaseCount">-</button>
-                                <input type="number" id="studentCount" min="1" max="6" value="1" readonly="">
+                                <input type="number" id="studentCount" min="4" max="6" value="4" readonly="">
                                 <button type="button" class="number-btn" id="increaseCount">+</button>
                             </div>
                         </div>
@@ -1948,7 +1948,7 @@ if (dayOfWeek === 1) {  // LUNES
             document.getElementById('step3Summary').innerHTML = 
                 '<strong>' + formatDateLong(selectedDate) + '</strong> a las <strong>' + formatTime(selectedTime) + '</strong>';
             document.getElementById('bookingForm').reset();
-            studentCountInput.value = 1;
+            studentCountInput.value = 4;
             
             var errorMessages = document.querySelectorAll('.error-message');
             for (var i = 0; i < errorMessages.length; i++) {
@@ -1964,7 +1964,7 @@ if (dayOfWeek === 1) {  // LUNES
         function updateStudentCount(change) {
             var current = parseInt(studentCountInput.value);
             var newValue = current + change;
-            if (newValue >= 1 && newValue <= 6) {
+            if (newValue >= 4 && newValue <= 6) {
                 studentCountInput.value = newValue;
             }
         }
