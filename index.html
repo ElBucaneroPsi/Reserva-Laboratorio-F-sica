@@ -1437,16 +1437,31 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
 
         // CONFIGURACIÓN DE REGLAS DE NEGOCIO
         var CONFIG = {
-            // Fechas habilitadas para reservaciones (solo semana del 3 al 6 de febrero 2026)
+            // Fechas habilitadas para reservaciones 
             enabledDates: {
                 start: '2026-02-03',
-                end: '2026-02-06'
+                end: '2026-02-13'
             },
             // Materias permitidas para reservaciones
             allowedSubjects: [
                 'Estática y dinámica',
                 'Electricidad y Magnetismo'
+                'Ondas y Termodinámica'  // Ahora las 3 están en la lista
             ],
+
+        // Restricciones por semana
+weekRestrictions: {
+    'week1': {
+        start: '2026-02-03',
+        end: '2026-02-06',
+        subjects: ['Estática y dinámica', 'Electricidad y Magnetismo']
+    },
+    'week2': {
+        start: '2026-02-09',
+        end: '2026-02-13',
+        subjects: ['Ondas y Termodinámica']
+    }
+},
             // Bloqueo manual de horarios (viernes 11:00-12:00)
             blockedSlots: [
                 { dayOfWeek: 5, startHour: 11, endHour: 12 } // Viernes 11:00 a 12:00
@@ -1901,14 +1916,31 @@ if (dayOfWeek === 1) {  // LUNES
                     valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value);
                 }
 
-                // Validación específica para materia permitida
-                if (field.id === 'subject' && valid) {
-                    if (CONFIG.allowedSubjects.indexOf(input.value) === -1) {
-                        valid = false;
-                        errorEl.textContent = 'MATERIA NO PERMITIDA';
-                    }
-                }
-
+                // Validación específica para materia permitida según la semana
+if (field.id === 'subject' && valid) {
+    var subjectAllowed = false;
+    
+    // Verificar en qué semana cae la fecha seleccionada
+    for (var week in CONFIG.weekRestrictions) {
+        var restriction = CONFIG.weekRestrictions[week];
+        var startDate = new Date(restriction.start + 'T00:00:00');
+        var endDate = new Date(restriction.end + 'T00:00:00');
+        var currentDate = new Date(selectedDate + 'T00:00:00');
+        
+        if (currentDate >= startDate && currentDate <= endDate) {
+            // Verificar si la materia está permitida esta semana
+            if (restriction.subjects.indexOf(input.value) !== -1) {
+                subjectAllowed = true;
+                break;
+            }
+        }
+    }
+    
+    if (!subjectAllowed) {
+        valid = false;
+        errorEl.textContent = 'MATERIA NO PERMITIDA ESTA SEMANA';
+    }
+}
                 if (!valid) {
                     input.classList.add('error');
                     if (field.id !== 'subject' || CONFIG.allowedSubjects.indexOf(input.value) === -1) {
