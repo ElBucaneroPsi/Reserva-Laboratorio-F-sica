@@ -1867,12 +1867,17 @@ if (dayOfWeek === 1) {  // LUNES
                     }
                 }
 
-                // Verificar capacidad (simulado - en producción vendría de la base de datos)
-                var isFull = false;
-                var currentReservations = getReservationCount(selectedDate, time);
-                if (currentReservations >= CONFIG.maxReservationsPerSlot) {
-                    isFull = true;
-                }
+                // Verificar capacidad (REAL - usando localStorage)
+var isFull = false;
+var currentReservations = 0;
+
+// Solo consultar si hay fecha seleccionada
+if (selectedDate) {
+    currentReservations = getReservationCount(selectedDate, time);
+    if (currentReservations >= CONFIG.maxReservationsPerSlot) {
+        isFull = true;
+    }
+}
 
                 // Marcar como ocupado si está bloqueado o lleno
                 if (isBlocked || isFull) {
@@ -1898,17 +1903,78 @@ if (dayOfWeek === 1) {  // LUNES
             }
         }
 
-        // Función para obtener el número de reservaciones en un horario (simulada)
-        function getReservationCount(date, time) {
-            // En una implementación real, esto consultaría la base de datos
-            // Por ahora simulamos algunas reservaciones para demostración
-            // Ejemplo: viernes 11:00 tiene 3 reservaciones (para probar el bloqueo visual)
-            if (date === '2026-02-07' && time === '11:00') {
-                return 3; // Simulando reservaciones existentes
-            }
-            return 0; // Sin reservaciones por defecto
+       // Función para obtener el número REAL de reservaciones en un horario
+function getReservationCount(date, time) {
+    // 1. Buscar contador específico para esta fecha y hora
+    var claveEspecifica = 'contador_' + date + '_' + time.replace(':', '');
+    var contadorEspecifico = localStorage.getItem(claveEspecifica);
+    
+    // 2. Si existe, devolver ese número
+    if (contadorEspecifico !== null) {
+        return parseInt(contadorEspecifico);
+    }
+    
+    // 3. Si no existe, buscar en el registro completo (backup)
+    var registroCompleto = JSON.parse(localStorage.getItem('registro_reservas') || '[]');
+    var contador = 0;
+    
+    for (var i = 0; i < registroCompleto.length; i++) {
+        var reserva = registroCompleto[i];
+        if (reserva.fecha === date && reserva.hora === time) {
+            contador++;
         }
+    }
+    
+    return contador;
+}
 
+ // Función para incrementar el contador cuando se confirma una reserva
+function incrementarContadorReserva(date, time) {
+    // 1. Contador específico por fecha y hora
+    var claveEspecifica = 'contador_' + date + '_' + time.replace(':', '');
+    var actualEspecifico = parseInt(localStorage.getItem(claveEspecifica) || '0');
+    localStorage.setItem(claveEspecifica, (actualEspecifico + 1).toString());
+    
+    // 2. Guardar en registro completo para backup
+    var registroCompleto = JSON.parse(localStorage.getItem('registro_reservas') || '[]');
+    registroCompleto.push({
+        fecha: date,
+        hora: time,
+        equipo: document.getElementById('teamName') ? document.getElementById('teamName').value : 'No disponible',
+        timestamp: new Date().toISOString(),
+        id: Date.now() + Math.random()
+    });
+    localStorage.setItem('registro_reservas', JSON.stringify(registroCompleto));
+    
+    // 3. Contador total (opcional, para estadísticas)
+    var totalReservas = parseInt(localStorage.getItem('total_reservas') || '0');
+    localStorage.setItem('total_reservas', (totalReservas + 1).toString());
+    
+    console.log('Reserva registrada:', date, time, 'Total en este horario:', actualEspecifico + 1);
+}
+
+// Función para resetear contadores (solo para pruebas)
+function resetearContadoresPrueba() {
+    if (confirm('¿Resetear TODOS los contadores de reservas? Esto borrará todo el historial.')) {
+        // Eliminar contadores específicos
+        var clavesAEliminar = [];
+        for (var i = 0; i < localStorage.length; i++) {
+            var clave = localStorage.key(i);
+            if (clave.startsWith('contador_') || clave === 'registro_reservas' || clave === 'total_reservas') {
+                clavesAEliminar.push(clave);
+            }
+        }
+        
+        for (var j = 0; j < clavesAEliminar.length; j++) {
+            localStorage.removeItem(clavesAEliminar[j]);
+        }
+        
+        alert('✅ Contadores reseteados. Ahora hay 0 reservas en todos los horarios.');
+        // Recargar la página para actualizar visualmente
+        location.reload();
+    }
+}
+        
         function selectTime(time, element) {
             var slots = timeSlotsContainer.querySelectorAll('.time-slot');
             for (var i = 0; i < slots.length; i++) {
@@ -2033,7 +2099,26 @@ if (dayOfWeek === 1) {  // LUNES
 
     return isValid;
 }
-        function submitReservation() {
+       function submitReservation() {
+    // ========== VERIFICACIÓN DE CUPO ==========
+    // 1. Verificar si hay cupo disponible
+    var cupoActual = getReservationCount(selectedDate, selectedTime);
+    if (cupoActual >= 5) {
+        showToast('❌ ¡CUPO LLENO! Ya hay ' + cupoActual + ' reservas en este horario. Máximo 5 equipos por hora.', 'error');
+        
+        // Actualizar visualmente el horario como lleno
+        var slots = document.querySelectorAll('.time-slot');
+        slots.forEach(function(slot) {
+            if (slot.dataset.time === selectedTime) {
+                slot.classList.add('occupied');
+                slot.title = 'CUPO LLENO (' + cupoActual + '/5)';
+            }
+        });
+        
+        return; // Detener aquí
+    }
+    
+    // 2. Continuar con validación normal
     if (!validateForm()) {
         showToast('COMPLETA TODOS LOS CAMPOS OBLIGATORIOS', 'error');
         return;
@@ -2071,11 +2156,24 @@ if (dayOfWeek === 1) {  // LUNES
         body: JSON.stringify(reservationData)
     })
     .then(function() {
-        submitBooking.disabled = false;
-        submitBooking.innerHTML = 'CONFIRMAR RESERVA';
-        var localCode = 'LC' + Math.random().toString(36).substr(2, 6).toUpperCase();
-        showSuccess('RESERVA CONFIRMADA', 'Tu reserva ha sido guardada exitosamente.', localCode);
-    })
+    // ========== INCREMENTAR CONTADOR LOCAL ==========
+    incrementarContadorReserva(selectedDate, selectedTime);
+    
+    // ========== RESETEAR SELECCIONES ==========
+    selectedDate = null;
+    selectedTime = null;
+    
+    // ========== RESTAURAR BOTÓN ==========
+    submitBooking.disabled = false;
+    submitBooking.innerHTML = 'CONFIRMAR RESERVA';
+    
+    // ========== GENERAR CÓDIGO Y MOSTRAR ==========
+    var localCode = 'LC' + Math.random().toString(36).substr(2, 6).toUpperCase();
+    showSuccess('RESERVA CONFIRMADA', 
+                '✅ Tu reserva ha sido confirmada.<br>Hora: ' + selectedTime + '<br>Fecha: ' + formatDateLong(selectedDate) + 
+                '<br><strong>Cupo actual: ' + (cupoActual + 1) + '/5</strong>', 
+                localCode);
+})
     .catch(function(error) {
         console.error('Error:', error);
         submitBooking.disabled = false;
