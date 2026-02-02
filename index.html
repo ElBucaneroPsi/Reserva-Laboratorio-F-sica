@@ -1593,27 +1593,32 @@ weekRestrictions: {
             ]
         };
 
-        function updateGrupos() {
-            var materia = document.getElementById('subject').value;
-            var grupoContainer = document.getElementById('grupoContainer');
-            var grupoSelect = document.getElementById('grupo');
+     function updateGrupos() {
+    var materia = document.getElementById('subject').value;
+    var grupoContainer = document.getElementById('grupoContainer');
+    var grupoSelect = document.getElementById('grupo');
+    
+    grupoSelect.innerHTML = '<option value="">SELECCIONAR GRUPO</option>';
+    
+    if (materia && GRUPOS[materia]) {
+        grupoContainer.style.display = 'block';
+        
+        GRUPOS[materia].forEach(function(grupo, index) {
+            var option = document.createElement('option');
+            option.value = index;
             
-            grupoSelect.innerHTML = '<option value="">SELECCIONAR GRUPO</option>';
-            
-            if (materia && GRUPOS[materia]) {
-                grupoContainer.style.display = 'block';
-                
-                GRUPOS[materia].forEach(function(grupo, index) {
-                    var option = document.createElement('option');
-                    option.value = index;
-                    option.textContent = grupo.profesor + ' | ' + grupo.horario + ' | ' + grupo.aula;
-                    grupoSelect.appendChild(option);
-                });
+            // Para Ondas y Termodinámica, muestra información específica
+            if (materia === 'Ondas y Termodinámica') {
+                option.textContent = grupo.profesor + ' | ' + grupo.horario + ' | ' + grupo.aula;
             } else {
-                grupoContainer.style.display = 'none';
+                option.textContent = grupo.profesor + ' | ' + grupo.horario + ' | ' + grupo.aula;
             }
-        }
-
+            grupoSelect.appendChild(option);
+        });
+    } else {
+        grupoContainer.style.display = 'none';
+    }
+}
         function updateAltaInfo() {
             var professor = document.getElementById('altaProfessor').value;
             document.getElementById('altaInfo').value = professor;
@@ -1893,67 +1898,69 @@ if (dayOfWeek === 1) {  // LUNES
         }
 
         function validateForm() {
-            var isValid = true;
+    var isValid = true;
 
-            var fields = [
-                { id: 'teamName', error: 'teamNameError', message: 'OBLIGATORIO' },
-                { id: 'subject', error: 'subjectError', message: 'SELECCIONA MATERIA' },
-                { id: 'grupo', error: 'grupoError', message: 'SELECCIONA GRUPO' },
-                { id: 'representativeName', error: 'representativeNameError', message: 'OBLIGATORIO' },
-                { id: 'email', error: 'emailError', message: 'CORREO NO VÁLIDO' }
-            ];
+    var fields = [
+        { id: 'teamName', error: 'teamNameError', message: 'OBLIGATORIO' },
+        { id: 'subject', error: 'subjectError', message: 'SELECCIONA MATERIA' },
+        { id: 'grupo', error: 'grupoError', message: 'SELECCIONA GRUPO' },
+        { id: 'representativeName', error: 'representativeNameError', message: 'OBLIGATORIO' },
+        { id: 'email', error: 'emailError', message: 'CORREO NO VÁLIDO' }
+    ];
 
-            for (var i = 0; i < fields.length; i++) {
-                var field = fields[i];
-                var input = document.getElementById(field.id);
-                var errorEl = document.getElementById(field.error);
-                var valid = input.value.trim();
+    // Primero: Validar campos básicos
+    for (var i = 0; i < fields.length; i++) {
+        var field = fields[i];
+        var input = document.getElementById(field.id);
+        var errorEl = document.getElementById(field.error);
+        var valid = input.value.trim();
 
-                if (field.id === 'email') {
-                    valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value);
+        // Validación de email
+        if (field.id === 'email') {
+            valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value);
+        }
+
+        // Validación de materia
+        if (field.id === 'subject') {
+            var selectedSubject = input.value;
+            var selectedDateObj = new Date(selectedDate + 'T00:00:00');
+            
+            // Definir las semanas y materias permitidas
+            var week1Start = new Date('2026-02-03T00:00:00');
+            var week1End = new Date('2026-02-06T23:59:59');
+            var week2Start = new Date('2026-02-09T00:00:00');
+            var week2End = new Date('2026-02-13T23:59:59');
+            
+            if (selectedDateObj >= week1Start && selectedDateObj <= week1End) {
+                // Semana 1: Solo Estática y Dinámica y Electricidad y Magnetismo
+                if (selectedSubject !== 'Estática y dinámica' && 
+                    selectedSubject !== 'Electricidad y Magnetismo') {
+                    valid = false;
+                    errorEl.textContent = 'SOLO: Estática/Dinámica o Electricidad/Magnetismo';
                 }
-
-                // Validación específica para materia permitida según la semana
-if (field.id === 'subject' && valid) {
-    var subjectAllowed = false;
-    
-    // Verificar en qué semana cae la fecha seleccionada
-    for (var week in CONFIG.weekRestrictions) {
-        var restriction = CONFIG.weekRestrictions[week];
-        var startDate = new Date(restriction.start + 'T00:00:00');
-        var endDate = new Date(restriction.end + 'T00:00:00');
-        var currentDate = new Date(selectedDate + 'T00:00:00');
-        
-        if (currentDate >= startDate && currentDate <= endDate) {
-            // Verificar si la materia está permitida esta semana
-            if (restriction.subjects.indexOf(input.value) !== -1) {
-                subjectAllowed = true;
-                break;
+            } else if (selectedDateObj >= week2Start && selectedDateObj <= week2End) {
+                // Semana 2: Solo Ondas y Termodinámica
+                if (selectedSubject !== 'Ondas y Termodinámica') {
+                    valid = false;
+                    errorEl.textContent = 'SOLO: Ondas y Termodinámica';
+                }
             }
         }
+
+        if (!valid) {
+            input.classList.add('error');
+            if (field.id !== 'subject') {
+                errorEl.textContent = field.message;
+            }
+            isValid = false;
+        } else {
+            input.classList.remove('error');
+            errorEl.textContent = '';
+        }
     }
-    
-    if (!subjectAllowed) {
-        valid = false;
-        errorEl.textContent = 'MATERIA NO PERMITIDA ESTA SEMANA';
-    }
+
+    return isValid;
 }
-
-                if (!valid) {
-                    input.classList.add('error');
-                    if (field.id !== 'subject' || CONFIG.allowedSubjects.indexOf(input.value) === -1) {
-                        errorEl.textContent = field.message;
-                    }
-                    isValid = false;
-                } else {
-                    input.classList.remove('error');
-                    errorEl.textContent = '';
-                }
-            }
-
-            return isValid;
-        }
-
         function submitReservation() {
     if (!validateForm()) {
         showToast('COMPLETA TODOS LOS CAMPOS OBLIGATORIOS', 'error');
