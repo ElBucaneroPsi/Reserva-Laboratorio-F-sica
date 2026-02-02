@@ -1465,8 +1465,62 @@ weekRestrictions: {
                 { dayOfWeek: 5, startHour: 11, endHour: 12 } // Viernes 11:00 a 12:00
             ],
             // Capacidad máxima por horario
+                      // Capacidad máxima por horario
             maxReservationsPerSlot: 5
         };
+
+// ========== SISTEMA DE CONTADOR INFALIBLE ==========
+var CONTADOR_MATRIX = {
+    // Base de datos principal
+    baseDatos: JSON.parse(localStorage.getItem('CONTADOR_MATRIX_DB') || '{}'),
+    
+    // Contar reservas
+    contar: function(fecha, hora) {
+        var clave = this._crearClave(fecha, hora);
+        return this.baseDatos[clave] || 0;
+    },
+    
+    // Agregar reserva (DEVUELVE false SI YA HAY 5)
+    agregar: function(fecha, hora) {
+        var clave = this._crearClave(fecha, hora);
+        var actual = this.baseDatos[clave] || 0;
+        
+        if (actual >= 5) {
+            return false; // NO permitir
+        }
+        
+        this.baseDatos[clave] = actual + 1;
+        this._guardar();
+        return this.baseDatos[clave]; // Devuelve nuevo total
+    },
+    
+    // Ver todos los contadores (debug)
+    verTodos: function() {
+        console.log('=== CONTADOR MATRIX ===');
+        for (var clave in this.baseDatos) {
+            var partes = clave.split('|');
+            console.log(partes[0], partes[1] + ':00 →', this.baseDatos[clave], 'reservas');
+        }
+        console.log('========================');
+    },
+    
+    // Resetear
+    resetear: function() {
+        this.baseDatos = {};
+        this._guardar();
+        alert('✅ Contadores reseteados. Recargando...');
+        location.reload();
+    },
+    
+    // Funciones internas
+    _crearClave: function(fecha, hora) {
+        return fecha + '|' + hora.replace(':', '').substr(0, 2);
+    },
+    
+    _guardar: function() {
+        localStorage.setItem('CONTADOR_MATRIX_DB', JSON.stringify(this.baseDatos));
+    }
+};
 
         function initialize() {
             // Obtener elementos
@@ -1904,75 +1958,22 @@ if (selectedDate) {
         }
 
        // Función para obtener el número REAL de reservaciones en un horario
+// Función que usa el sistema infalible
 function getReservationCount(date, time) {
-    // 1. Buscar contador específico para esta fecha y hora
-    var claveEspecifica = 'contador_' + date + '_' + time.replace(':', '');
-    var contadorEspecifico = localStorage.getItem(claveEspecifica);
-    
-    // 2. Si existe, devolver ese número
-    if (contadorEspecifico !== null) {
-        return parseInt(contadorEspecifico);
-    }
-    
-    // 3. Si no existe, buscar en el registro completo (backup)
-    var registroCompleto = JSON.parse(localStorage.getItem('registro_reservas') || '[]');
-    var contador = 0;
-    
-    for (var i = 0; i < registroCompleto.length; i++) {
-        var reserva = registroCompleto[i];
-        if (reserva.fecha === date && reserva.hora === time) {
-            contador++;
-        }
-    }
-    
-    return contador;
+    return CONTADOR_MATRIX.contar(date, time);
 }
-
+        
  // Función para incrementar el contador cuando se confirma una reserva
+// Función que usa el sistema infalible
 function incrementarContadorReserva(date, time) {
-    // 1. Contador específico por fecha y hora
-    var claveEspecifica = 'contador_' + date + '_' + time.replace(':', '');
-    var actualEspecifico = parseInt(localStorage.getItem(claveEspecifica) || '0');
-    localStorage.setItem(claveEspecifica, (actualEspecifico + 1).toString());
-    
-    // 2. Guardar en registro completo para backup
-    var registroCompleto = JSON.parse(localStorage.getItem('registro_reservas') || '[]');
-    registroCompleto.push({
-        fecha: date,
-        hora: time,
-        equipo: document.getElementById('teamName') ? document.getElementById('teamName').value : 'No disponible',
-        timestamp: new Date().toISOString(),
-        id: Date.now() + Math.random()
-    });
-    localStorage.setItem('registro_reservas', JSON.stringify(registroCompleto));
-    
-    // 3. Contador total (opcional, para estadísticas)
-    var totalReservas = parseInt(localStorage.getItem('total_reservas') || '0');
-    localStorage.setItem('total_reservas', (totalReservas + 1).toString());
-    
-    console.log('Reserva registrada:', date, time, 'Total en este horario:', actualEspecifico + 1);
-}
-
-// Función para resetear contadores (solo para pruebas)
-function resetearContadoresPrueba() {
-    if (confirm('¿Resetear TODOS los contadores de reservas? Esto borrará todo el historial.')) {
-        // Eliminar contadores específicos
-        var clavesAEliminar = [];
-        for (var i = 0; i < localStorage.length; i++) {
-            var clave = localStorage.key(i);
-            if (clave.startsWith('contador_') || clave === 'registro_reservas' || clave === 'total_reservas') {
-                clavesAEliminar.push(clave);
-            }
-        }
-        
-        for (var j = 0; j < clavesAEliminar.length; j++) {
-            localStorage.removeItem(clavesAEliminar[j]);
-        }
-        
-        alert('✅ Contadores reseteados. Ahora hay 0 reservas en todos los horarios.');
-        // Recargar la página para actualizar visualmente
-        location.reload();
+    var resultado = CONTADOR_MATRIX.agregar(date, time);
+    if (resultado === false) {
+        console.error('❌ ERROR: Se intentó agregar reserva #6 en', date, time);
+        return 0;
     }
+    console.log('✅ Contador actualizado:', date, time, '→', resultado, 'reservas');
+    CONTADOR_MATRIX.verTodos(); // Para debug
+    return resultado;
 }
         
         function selectTime(time, element) {
@@ -2099,14 +2100,25 @@ function resetearContadoresPrueba() {
 
     return isValid;
 }
-       function submitReservation() {
-    // ========== VERIFICACIÓN DE CUPO ==========
-    // 1. Verificar si hay cupo disponible
-    var cupoActual = getReservationCount(selectedDate, selectedTime);
+      function submitReservation() {
+    console.log('=== INICIANDO RESERVA ===');
+    console.log('Fecha:', selectedDate);
+    console.log('Hora:', selectedTime);
+    
+    // ========== VERIFICACIÓN CON SISTEMA INFALIBLE ==========
+    var cupoActual = CONTADOR_MATRIX.contar(selectedDate, selectedTime);
+    console.log('Cupo actual según CONTADOR_MATRIX:', cupoActual);
+    
+    // GUARDAR PARA USAR DESPUÉS
+    window.cupoActualReserva = cupoActual;
+    
     if (cupoActual >= 5) {
-        showToast('❌ ¡CUPO LLENO! Ya hay ' + cupoActual + ' reservas en este horario. Máximo 5 equipos por hora.', 'error');
+        showToast('❌ ¡CUPO LLENO! Ya hay ' + cupoActual + ' reservas en este horario. Máximo 5 equipos.', 'error');
         
-        // Actualizar visualmente el horario como lleno
+        // DEBUG: Mostrar en consola
+        CONTADOR_MATRIX.verTodos();
+        
+        // Marcar como ocupado visualmente
         var slots = document.querySelectorAll('.time-slot');
         slots.forEach(function(slot) {
             if (slot.dataset.time === selectedTime) {
@@ -2115,15 +2127,14 @@ function resetearContadoresPrueba() {
             }
         });
         
-        return; // Detener aquí
+        return;
     }
     
-    // 2. Continuar con validación normal
+    // ========== VALIDACIÓN NORMAL ==========
     if (!validateForm()) {
         showToast('COMPLETA TODOS LOS CAMPOS OBLIGATORIOS', 'error');
         return;
     }
-
     submitBooking.disabled = true;
     submitBooking.innerHTML = '<span class="spinner"></span> GUARDANDO...';
     
@@ -2155,9 +2166,14 @@ function resetearContadoresPrueba() {
         },
         body: JSON.stringify(reservationData)
     })
-    .then(function() {
-    // ========== INCREMENTAR CONTADOR LOCAL ==========
-    incrementarContadorReserva(selectedDate, selectedTime);
+   .then(function() {
+    // ========== GUARDAR VARIABLES ANTES DE ANULAR ==========
+    var fechaGuardada = selectedDate;
+    var horaGuardada = selectedTime;
+    var cupoParaMostrar = window.cupoActualReserva || 0;
+    
+    // ========== INCREMENTAR EN SISTEMA INFALIBLE ==========
+    var nuevoTotal = incrementarContadorReserva(fechaGuardada, horaGuardada);
     
     // ========== RESETEAR SELECCIONES ==========
     selectedDate = null;
@@ -2170,9 +2186,20 @@ function resetearContadoresPrueba() {
     // ========== GENERAR CÓDIGO Y MOSTRAR ==========
     var localCode = 'LC' + Math.random().toString(36).substr(2, 6).toUpperCase();
     showSuccess('RESERVA CONFIRMADA', 
-                '✅ Tu reserva ha sido confirmada.<br>Hora: ' + selectedTime + '<br>Fecha: ' + formatDateLong(selectedDate) + 
-                '<br><strong>Cupo actual: ' + (cupoActual + 1) + '/5</strong>', 
+                '✅ RESERVA #' + nuevoTotal + ' DE 5<br>' +
+                'Hora: ' + horaGuardada + '<br>' +
+                'Fecha: ' + formatDateLong(fechaGuardada) + '<br>' +
+                '<strong>¡Cupo actual: ' + nuevoTotal + '/5!</strong><br><br>' +
+                '<small>Código: ' + localCode + '</small>', 
                 localCode);
+    
+    // ========== FORZAR RECARGA DESPUÉS DE 3 SEGUNDOS ==========
+    setTimeout(function() {
+        document.getElementById('successModal').classList.remove('active');
+        setTimeout(function() {
+            location.reload();
+        }, 500);
+    }, 3500);
 })
     .catch(function(error) {
         console.error('Error:', error);
@@ -2446,6 +2473,37 @@ function resetearContadoresPrueba() {
   </div>
   <div class="minimax-close-icon" onclick="document.getElementById('minimax-floating-ball').style.display='none'">×</div>
 </div>
+
+<!-- BOTONES SECRETOS DE ADMIN - SOLO TÚ LOS VES -->
+<button onclick="CONTADOR_MATRIX.verTodos()" 
+        style="position: fixed; top: 15px; right: 15px; 
+               background: #FF3333; color: white; border: none;
+               padding: 8px 12px; font-size: 12px; z-index: 9999;
+               cursor: pointer; opacity: 0.7; border-radius: 4px;
+               font-family: 'Roboto Mono', monospace; font-weight: bold;"
+        title="Ver contadores (Admin)">
+    🔍 VER CONTADORES
+</button>
+
+<button onclick="CONTADOR_MATRIX.resetear()" 
+        style="position: fixed; top: 15px; right: 160px; 
+               background: #003B00; color: #00FF41; border: 1px solid #00FF41;
+               padding: 8px 12px; font-size: 12px; z-index: 9999;
+               cursor: pointer; opacity: 0.7; border-radius: 4px;
+               font-family: 'Roboto Mono', monospace; font-weight: bold;"
+        title="Resetear contadores (Admin)">
+    🗑️ RESETEAR TODO
+</button>
+
+<button onclick="console.log('CONTADOR_MATRIX_DB:', localStorage.getItem('CONTADOR_MATRIX_DB'))" 
+        style="position: fixed; top: 50px; right: 15px; 
+               background: #003B00; color: #00FF41; border: 1px solid #00FF41;
+               padding: 8px 12px; font-size: 12px; z-index: 9999;
+               cursor: pointer; opacity: 0.7; border-radius: 4px;
+               font-family: 'Roboto Mono', monospace; font-weight: bold;"
+        title="Ver raw data (Admin)">
+    📊 VER RAW DATA
+</button>    
 
 </body>
 </html>
