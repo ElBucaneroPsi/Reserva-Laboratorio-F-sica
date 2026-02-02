@@ -1068,10 +1068,10 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
                         </div>
 
                         <div class="form-group">
-                            <label for="studentCount">Número de Integrantes (4-6) *</label>
+                            <label for="studentCount">Número de Integrantes (1-6) *</label>
                             <div class="number-input">
                                 <button type="button" class="number-btn" id="decreaseCount">-</button>
-                                <input type="number" id="studentCount" min="4" max="6" value="4" readonly="">
+                                <input type="number" id="studentCount" min="1" max="6" value="1" readonly="">
                                 <button type="button" class="number-btn" id="increaseCount">+</button>
                             </div>
                         </div>
@@ -1437,31 +1437,16 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
 
         // CONFIGURACIÓN DE REGLAS DE NEGOCIO
         var CONFIG = {
-            // Fechas habilitadas para reservaciones 
+            // Fechas habilitadas para reservaciones (solo semana del 3 al 6 de febrero 2026)
             enabledDates: {
                 start: '2026-02-03',
-                end: '2026-02-13'
+                end: '2026-02-06'
             },
             // Materias permitidas para reservaciones
             allowedSubjects: [
                 'Estática y dinámica',
                 'Electricidad y Magnetismo'
-                'Ondas y Termodinámica'  // Ahora las 3 están en la lista
             ],
-
-        // Restricciones por semana
-weekRestrictions: {
-    'week1': {
-        start: '2026-02-03',
-        end: '2026-02-06',
-        subjects: ['Estática y dinámica', 'Electricidad y Magnetismo']
-    },
-    'week2': {
-        start: '2026-02-09',
-        end: '2026-02-13',
-        subjects: ['Ondas y Termodinámica']
-    }
-},
             // Bloqueo manual de horarios (viernes 11:00-12:00)
             blockedSlots: [
                 { dayOfWeek: 5, startHour: 11, endHour: 12 } // Viernes 11:00 a 12:00
@@ -1874,7 +1859,7 @@ if (dayOfWeek === 1) {  // LUNES
             document.getElementById('step3Summary').innerHTML = 
                 '<strong>' + formatDateLong(selectedDate) + '</strong> a las <strong>' + formatTime(selectedTime) + '</strong>';
             document.getElementById('bookingForm').reset();
-            studentCountInput.value = 4;
+            studentCountInput.value = 1;
             
             var errorMessages = document.querySelectorAll('.error-message');
             for (var i = 0; i < errorMessages.length; i++) {
@@ -1890,7 +1875,7 @@ if (dayOfWeek === 1) {  // LUNES
         function updateStudentCount(change) {
             var current = parseInt(studentCountInput.value);
             var newValue = current + change;
-            if (newValue >= 4 && newValue <= 6) {
+            if (newValue >= 1 && newValue <= 6) {
                 studentCountInput.value = newValue;
             }
         }
@@ -1916,31 +1901,14 @@ if (dayOfWeek === 1) {  // LUNES
                     valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value);
                 }
 
-                // Validación específica para materia permitida según la semana
-if (field.id === 'subject' && valid) {
-    var subjectAllowed = false;
-    
-    // Verificar en qué semana cae la fecha seleccionada
-    for (var week in CONFIG.weekRestrictions) {
-        var restriction = CONFIG.weekRestrictions[week];
-        var startDate = new Date(restriction.start + 'T00:00:00');
-        var endDate = new Date(restriction.end + 'T00:00:00');
-        var currentDate = new Date(selectedDate + 'T00:00:00');
-        
-        if (currentDate >= startDate && currentDate <= endDate) {
-            // Verificar si la materia está permitida esta semana
-            if (restriction.subjects.indexOf(input.value) !== -1) {
-                subjectAllowed = true;
-                break;
-            }
-        }
-    }
-    
-    if (!subjectAllowed) {
-        valid = false;
-        errorEl.textContent = 'MATERIA NO PERMITIDA ESTA SEMANA';
-    }
-}
+                // Validación específica para materia permitida
+                if (field.id === 'subject' && valid) {
+                    if (CONFIG.allowedSubjects.indexOf(input.value) === -1) {
+                        valid = false;
+                        errorEl.textContent = 'MATERIA NO PERMITIDA';
+                    }
+                }
+
                 if (!valid) {
                     input.classList.add('error');
                     if (field.id !== 'subject' || CONFIG.allowedSubjects.indexOf(input.value) === -1) {
